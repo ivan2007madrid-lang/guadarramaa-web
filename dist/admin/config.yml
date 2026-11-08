@@ -1,0 +1,231 @@
+# Panel de administración (Decap CMS, gratuito).
+# ANTES DE USARLO: cambia TU-USUARIO/TU-REPOSITORIO por tu repositorio de GitHub.
+backend:
+  name: github
+  repo: TU-USUARIO/TU-REPOSITORIO
+  branch: main
+
+locale: es
+publish_mode: simple
+media_folder: src/img/uploads
+public_folder: /img/uploads
+site_url: /
+show_preview_links: false
+
+collections:
+  # ------------------------------------------------------------ RUTAS
+  - name: rutas
+    label: "Rutas guiadas"
+    label_singular: "ruta"
+    folder: content/rutas
+    extension: json
+    format: json
+    create: true
+    slug: "{{slug}}"
+    identifier_field: titulo
+    summary: "{{titulo}}"
+    fields:
+      - { label: "Nombre de la ruta", name: titulo, widget: string }
+      - { label: "Publicada (quita la marca para ocultarla sin borrarla)", name: publicada, widget: boolean, default: true }
+      - { label: "Orden en la web (1 sale primero)", name: orden, widget: number, value_type: int, min: 1, default: 10, required: false }
+      - { label: "Mostrar en la portada", name: destacada, widget: boolean, default: true }
+      - { label: "Zona", name: zona, widget: string, required: false, hint: "Ejemplo: Localidad · Sierra de Guadarrama" }
+      - { label: "Resumen (1-2 frases, aparece en la tarjeta)", name: resumen, widget: text, required: false }
+      - { label: "Descripción completa", name: descripcion, widget: markdown, required: false, buttons: [bold, italic, link, heading-two, bulleted-list, numbered-list] }
+      - { label: "Foto principal", name: imagen, widget: image, required: false, hint: "Mejor horizontal y de menos de 400 KB." }
+      - label: "Más fotografías"
+        name: fotos
+        widget: list
+        required: false
+        field: { label: "Foto", name: imagen, widget: image }
+      - { label: "Duración", name: duracion, widget: string, required: false, hint: "Escribe el dato real, por ejemplo: 4 horas" }
+      - { label: "Distancia (solo el número, en km)", name: km, widget: string, required: false }
+      - { label: "Dificultad", name: dificultad, widget: select, required: false, options: ["Fácil", "Moderada", "Exigente"] }
+      - { label: "Desnivel (solo el número, en metros)", name: desnivel, widget: string, required: false }
+      - { label: "Punto de encuentro", name: encuentro, widget: string, required: false }
+      - { label: "Latitud del punto de encuentro (opcional)", name: lat, widget: string, required: false, hint: "Ejemplo con punto decimal: 40.5846" }
+      - { label: "Longitud del punto de encuentro (opcional)", name: lng, widget: string, required: false, hint: "Ejemplo con punto decimal: -4.1477" }
+      - { label: "Material recomendado (un elemento por línea)", name: material, widget: text, required: false }
+      - { label: "Qué incluye", name: incluye, widget: markdown, required: false, buttons: [bold, italic, bulleted-list] }
+      - { label: "Perfil de altitud (opcional)", name: perfil, widget: string, required: false, hint: "Pares km:altitud separados por comas. Ejemplo: 0:900, 3:1050, 6:1200" }
+      - { label: "Precio", name: precio, widget: string, required: false, hint: "Escribe el precio real con el texto que quieras mostrar" }
+      - { label: "Semilla de la ilustración provisional", name: semilla, widget: hidden, required: false }
+
+  # ------------------------------------------------------------ ACTIVIDADES
+  - name: calendario
+    label: "Fechas y actividades"
+    files:
+      - label: "Próximas salidas y actividades"
+        name: salidas
+        file: content/salidas.json
+        fields:
+          - label: "Salidas"
+            name: items
+            widget: list
+            summary: "{{fields.fecha}} · {{fields.ruta}}{{fields.titulo}}"
+            fields:
+              - { label: "Ruta", name: ruta, widget: relation, collection: rutas, search_fields: [titulo], value_field: "{{slug}}", display_fields: [titulo], required: false, hint: "Déjalo vacío si es otra actividad y escribe su nombre abajo." }
+              - { label: "Nombre (solo si no es una ruta)", name: titulo, widget: string, required: false }
+              - { label: "Fecha", name: fecha, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", picker_utc: true, required: false }
+              - { label: "Hora de salida", name: hora, widget: string, required: false, hint: "Ejemplo: 9:30" }
+              - { label: "Plazas", name: plazas, widget: string, required: false }
+              - { label: "Nota (opcional)", name: nota, widget: string, required: false }
+
+  # ------------------------------------------------------------ BLOG
+  - name: blog
+    label: "Blog y novedades"
+    label_singular: "artículo"
+    folder: content/blog
+    extension: md
+    format: frontmatter
+    create: true
+    slug: "{{slug}}"
+    identifier_field: titulo
+    summary: "{{fecha}} · {{titulo}}"
+    fields:
+      - { label: "Título", name: titulo, widget: string }
+      - { label: "Fecha", name: fecha, widget: datetime, date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", picker_utc: true }
+      - { label: "Resumen (aparece en el listado)", name: resumen, widget: text }
+      - { label: "Imagen", name: imagen, widget: image, required: false }
+      - { label: "Borrador (no se publica)", name: borrador, widget: boolean, default: false }
+      - { label: "Texto del artículo", name: body, widget: markdown }
+
+  # ------------------------------------------------------------ PÁGINAS Y TEXTOS
+  - name: paginas
+    label: "Textos de la web"
+    files:
+      - label: "Datos de contacto y ajustes"
+        name: ajustes
+        file: content/ajustes.json
+        fields:
+          - { label: "Nombre de la empresa", name: nombre, widget: string }
+          - { label: "Responsable", name: responsable, widget: string, required: false }
+          - { label: "Dirección de la web", name: url_sitio, widget: string, required: false, hint: "Ejemplo: https://mi-web.netlify.app (sin barra final)" }
+          - { label: "WhatsApp", name: whatsapp, widget: string, required: false, hint: "Con prefijo, solo números. Ejemplo: 34600123456" }
+          - { label: "Correo electrónico", name: email, widget: string, required: false }
+          - { label: "Teléfono", name: telefono, widget: string, required: false }
+          - { label: "Instagram (usuario)", name: instagram, widget: string, required: false, hint: "Ejemplo: @usuario" }
+          - { label: "Enlace completo de Instagram (cuando lo confirmes)", name: instagram_url, widget: string, required: false, hint: "Si lo dejas vacío, la web usa el usuario para crear el enlace y lo marca como pendiente de confirmar." }
+          - { label: "Mensaje inicial de WhatsApp (opcional)", name: whatsapp_mensaje, widget: text, required: false, hint: "Si lo dejas vacío se usa un mensaje de consulta sobre rutas y reservas." }
+          - { label: "Enlace de invitación a la comunidad de WhatsApp", name: whatsapp_comunidad, widget: string, required: false, hint: "Cópialo desde WhatsApp (empieza por https://chat.whatsapp.com/ o https://whatsapp.com/channel/). Vacío = el botón queda desactivado." }
+          - { label: "Mostrar aviso de prototipo y marcas de datos pendientes", name: avisos_provisionales, widget: boolean, default: true }
+      - label: "Portada"
+        name: portada
+        file: content/portada.json
+        fields:
+          - { label: "Título principal", name: titulo, widget: string }
+          - { label: "Frase de presentación", name: lema, widget: string }
+          - { label: "Foto de portada (panorámica)", name: imagen, widget: image, required: false }
+          - { label: "Título de la presentación", name: presentacion_titulo, widget: string }
+          - { label: "Texto de presentación", name: presentacion, widget: markdown, buttons: [bold, italic, link] }
+          - { label: "Foto de la presentación", name: imagen_presentacion, widget: image, required: false }
+      - label: "Servicios"
+        name: servicios
+        file: content/servicios.json
+        fields:
+          - { label: "Introducción", name: intro, widget: string, required: false }
+          - label: "Servicios"
+            name: items
+            widget: list
+            summary: "{{fields.titulo}}"
+            fields:
+              - { label: "Nombre", name: titulo, widget: string }
+              - { label: "Descripción", name: texto, widget: text }
+              - label: "Icono"
+                name: icono
+                widget: select
+                default: route
+                options:
+                  - { label: "Ruta", value: route }
+                  - { label: "Grupo", value: group }
+                  - { label: "Cámara", value: camera }
+                  - { label: "Mochila", value: bag }
+                  - { label: "Brújula", value: compass }
+                  - { label: "Corazón", value: heart }
+                  - { label: "Hoja", value: leaf }
+                  - { label: "Montaña", value: mountain }
+      - label: "Quiénes somos"
+        name: nosotros
+        file: content/nosotros.json
+        fields:
+          - { label: "Título", name: titulo, widget: string }
+          - { label: "Historia", name: historia, widget: markdown, buttons: [bold, italic, link] }
+          - label: "Disciplinas que practica"
+            name: disciplinas
+            widget: list
+            required: false
+            field: { label: "Disciplina", name: nombre, widget: string }
+          - { label: "Foto", name: imagen, widget: image, required: false }
+          - label: "Valores"
+            name: valores
+            widget: list
+            summary: "{{fields.titulo}}"
+            fields:
+              - { label: "Título", name: titulo, widget: string }
+              - { label: "Texto", name: texto, widget: text }
+          - label: "Equipo"
+            name: equipo
+            widget: list
+            summary: "{{fields.nombre}}"
+            fields:
+              - { label: "Nombre", name: nombre, widget: string }
+              - { label: "Cargo", name: cargo, widget: string, required: false }
+              - { label: "Foto", name: foto, widget: image, required: false }
+              - { label: "Presentación", name: bio, widget: text, required: false }
+          - { label: "Titulaciones, seguros y acreditaciones", name: titulaciones, widget: markdown, buttons: [bold, italic, bulleted-list] }
+      - label: "Preguntas frecuentes"
+        name: faq
+        file: content/faq.json
+        fields:
+          - label: "Preguntas"
+            name: items
+            widget: list
+            summary: "{{fields.pregunta}}"
+            fields:
+              - { label: "Pregunta", name: pregunta, widget: string }
+              - { label: "Respuesta", name: respuesta, widget: markdown, buttons: [bold, italic, link, bulleted-list] }
+      - label: "Opiniones de clientes"
+        name: opiniones
+        file: content/opiniones.json
+        fields:
+          - label: "Opiniones (solo opiniones reales y con permiso)"
+            name: items
+            widget: list
+            required: false
+            summary: "{{fields.autor}}"
+            fields:
+              - { label: "Opinión", name: texto, widget: text }
+              - { label: "Nombre", name: autor, widget: string }
+              - { label: "Ruta realizada", name: ruta, widget: relation, collection: rutas, search_fields: [titulo], value_field: "{{slug}}", display_fields: [titulo], required: false }
+              - { label: "Estrellas", name: estrellas, widget: number, value_type: int, min: 1, max: 5, default: 5 }
+      - label: "Aviso legal y privacidad"
+        name: legal
+        file: content/legal.json
+        fields:
+          - { label: "Texto", name: texto, widget: markdown }
+
+  # ------------------------------------------------------------ GALERÍA
+  - name: galeria
+    label: "Galería de fotos"
+    files:
+      - label: "Galería"
+        name: galeria
+        file: content/galeria.json
+        fields:
+          - label: "Fotografías"
+            name: fotos
+            widget: list
+            summary: "{{fields.texto}}"
+            fields:
+              - { label: "Foto", name: imagen, widget: image, required: false }
+              - { label: "Descripción corta", name: texto, widget: string }
+              - { label: "Ruta (opcional)", name: ruta, widget: relation, collection: rutas, search_fields: [titulo], value_field: "{{slug}}", display_fields: [titulo], required: false }
+              - label: "Tamaño en el mosaico"
+                name: forma
+                widget: select
+                default: ""
+                required: false
+                options:
+                  - { label: "Normal", value: "" }
+                  - { label: "Ancha", value: wide }
+                  - { label: "Alta", value: tall }

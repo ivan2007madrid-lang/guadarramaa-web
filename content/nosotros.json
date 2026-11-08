@@ -1,0 +1,35 @@
+{
+  "titulo": "Detrás de Guadarramaa.guidess está Iván González",
+  "historia": "Soy Iván González, técnico en el medio natural y del tiempo libre y un apasionado de la montaña. Soy miembro del club Todovertical y practico senderismo, alpinismo, trail running, ciclismo y escalada.\n\nMi objetivo es compartir mi pasión por la naturaleza y acercar la Sierra de Guadarrama a todo tipo de personas, independientemente de su experiencia o condición física.\n\nQuiero ofrecer rutas y experiencias adaptadas a diferentes edades, capacidades y niveles: desde quienes quieren iniciarse en el senderismo hasta aficionados que buscan descubrir nuevos lugares y disfrutar de la montaña.\n\nActualmente llevo el proyecto de manera individual. Me encargo personalmente de organizar y desarrollar cada ruta, así que el trato es cercano y directo desde la primera consulta.",
+  "imagen": "",
+  "valores": [
+    {
+      "titulo": "Montaña para todas las personas",
+      "texto": "La sierra es para quien quiera disfrutarla, sea cual sea su experiencia o su condición física."
+    },
+    {
+      "titulo": "Rutas adaptadas",
+      "texto": "Experiencias pensadas para distintas edades, capacidades y niveles, desde la primera salida hasta quienes buscan nuevos lugares."
+    },
+    {
+      "titulo": "Trato cercano",
+      "texto": "El proyecto lo lleva una sola persona, que se ocupa de la organización y del desarrollo de cada ruta."
+    }
+  ],
+  "equipo": [
+    {
+      "nombre": "Iván González",
+      "cargo": "Responsable de Guadarramaa.guidess",
+      "foto": "",
+      "bio": "Técnico en el medio natural y del tiempo libre. Miembro del club Todovertical. Practica senderismo, alpinismo, trail running, ciclismo y escalada."
+    }
+  ],
+  "titulaciones": "**Formación**\n\n- Técnico en el medio natural y del tiempo libre.\n- Cursos de formación de la Federación Madrileña de Montañismo (FMM).\n- Miembro del club Todovertical.\n\nPROVISIONAL: Información legal y condiciones de participación, pendiente de revisar antes de comercializar las actividades.",
+  "disciplinas": [
+    "Senderismo",
+    "Alpinismo",
+    "Trail running",
+    "Ciclismo",
+    "Escalada"
+  ]
+}

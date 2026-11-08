@@ -1,0 +1,8 @@
+{
+  "name": "guadarramaa-guidess-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Web de Guadarramaa.guidess. Sin dependencias: el generador usa solo Node.js.",
+  "scripts": { "build": "node build.js" },
+  "engines": { "node": ">=18" }
+}

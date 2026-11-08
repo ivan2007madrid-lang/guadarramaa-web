@@ -1,0 +1,32 @@
+{
+  "items": [
+    {
+      "pregunta": "¿Cómo puedo reservar una ruta?",
+      "respuesta": "La forma principal de reservar es por WhatsApp. Escribe a Iván, cuéntale qué ruta te interesa y cuántas personas sois, y te confirmará la disponibilidad. También puedes usar el formulario de contacto.\n\nPROVISIONAL: Añadir aquí cómo se confirma la plaza, cómo se paga y la política de cancelación, cuando estén definidos."
+    },
+    {
+      "pregunta": "¿Qué nivel físico necesito?",
+      "respuesta": "PROVISIONAL: Explica qué nivel se recomienda. Cada ruta indica su dificultad en su ficha."
+    },
+    {
+      "pregunta": "¿Qué material debo llevar?",
+      "respuesta": "PROVISIONAL: Resume el material básico. El detalle de cada ruta está en su ficha."
+    },
+    {
+      "pregunta": "¿Qué pasa si hace mal tiempo?",
+      "respuesta": "PROVISIONAL: Explica vuestra política de cancelación o cambio de fecha."
+    },
+    {
+      "pregunta": "¿Cuántas personas van en cada grupo?",
+      "respuesta": "PROVISIONAL: Indica el tamaño de los grupos."
+    },
+    {
+      "pregunta": "¿Puedo ir con niños o con mi perro?",
+      "respuesta": "PROVISIONAL: Indica vuestras condiciones."
+    },
+    {
+      "pregunta": "¿Cómo llego al punto de encuentro?",
+      "respuesta": "PROVISIONAL: Indica cómo llegar. Cada ficha de ruta muestra su punto de encuentro."
+    }
+  ]
+}

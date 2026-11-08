@@ -1,0 +1,7 @@
+# Configuración de Netlify. No hace falta tocar nada.
+[build]
+  command = "node build.js"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"

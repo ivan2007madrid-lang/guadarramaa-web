@@ -1,0 +1,25 @@
+{
+  "intro": "PROVISIONAL: Frase que resuma lo que ofrece la empresa.",
+  "items": [
+    {
+      "titulo": "Rutas guiadas",
+      "texto": "Salidas por la Sierra de Guadarrama organizadas y desarrolladas personalmente por Iván González, pensadas para distintas edades, capacidades y niveles.",
+      "icono": "route"
+    },
+    {
+      "titulo": "PROVISIONAL: Nombre del servicio",
+      "texto": "PROVISIONAL: Qué incluye este servicio.",
+      "icono": "group"
+    },
+    {
+      "titulo": "PROVISIONAL: Nombre del servicio",
+      "texto": "PROVISIONAL: Qué incluye este servicio.",
+      "icono": "compass"
+    },
+    {
+      "titulo": "PROVISIONAL: Nombre del servicio",
+      "texto": "PROVISIONAL: Qué incluye este servicio.",
+      "icono": "camera"
+    }
+  ]
+}

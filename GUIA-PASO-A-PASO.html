@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Guía paso a paso · Guadarramaa.guidess</title>
+<style>
+:root{--bg:#F4EFDF;--ink:#1B2A20;--soft:#4B5748;--brand:#24462F;--line:#CBC1A4;--card:#FBF8EE;--acc:#A65823;--prov:#EEDFAE}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{background:#1F3D2B;color:#F1EBDA;padding:36px 20px}header .w,main{max-width:820px;margin:0 auto}
+header h1{margin:0 0 8px;font:400 2rem/1.15 Georgia,serif}header p{margin:0;color:#B9C4AE}
+main{padding:28px 20px 80px}nav{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:16px 22px;margin-bottom:34px}
+nav ol{margin:6px 0 0;padding-left:1.2em}nav a{color:var(--brand)}
+h2{font:400 1.7rem/1.2 Georgia,serif;color:var(--brand);margin:46px 0 12px;padding-top:10px;border-top:3px solid var(--line)}
+h3{font:600 1.1rem system-ui;margin:26px 0 6px;color:var(--ink)}
+code,kbd{background:#E9E1C8;padding:1px 6px;border-radius:3px;font:.92em ui-monospace,Menlo,Consolas,monospace}
+pre{background:#1F3D2B;color:#F1EBDA;padding:14px 16px;border-radius:6px;overflow:auto;font:.9em ui-monospace,Menlo,Consolas,monospace}
+.box{background:var(--card);border-left:5px solid #D9A21B;padding:12px 16px;margin:16px 0;border-radius:0 6px 6px 0}
+.prov{background:var(--prov);padding:0 .3em}
+table{border-collapse:collapse;width:100%;font-size:.95rem;display:block;overflow-x:auto}td,th{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}th{background:#E9E1C8}
+li{margin:4px 0}a{color:var(--acc)}
+</style></head><body>
+<header><div class="w"><h1>Guía paso a paso</h1><p>Cómo publicar y mantener la web de Guadarramaa.guidess sin saber programar y sin pagar nada.</p></div></header>
+<main>
+<nav><strong>Contenido</strong><ol>
+<li><a href="#que-hay">Qué contiene la carpeta</a></li>
+<li><a href="#publicar">Publicar la web gratis (recomendado: con panel de edición)</a></li>
+<li><a href="#rapido">Alternativa rápida: arrastrar y soltar</a></li>
+<li><a href="#actualizar">Cómo actualizar cada cosa</a></li>
+<li><a href="#provisional">Los textos «PROVISIONAL»</a></li>
+<li><a href="#whatsapp">WhatsApp y correo</a></li>
+<li><a href="#formulario">El formulario de contacto</a></li>
+<li><a href="#seo">Aparecer en Google</a></li>
+<li><a href="#limites">Costes y límites</a></li>
+<li><a href="#pendiente">Lo que falta por poner</a></li></ol></nav>
+
+<h2 id="que-hay">1. Qué contiene la carpeta</h2>
+<table><tr><th>Carpeta o archivo</th><th>Para qué sirve</th></tr>
+<tr><td><code>dist/</code></td><td>La web ya terminada. Es lo que se publica.</td></tr>
+<tr><td><code>content/</code></td><td>Todos los textos y datos (rutas, fechas, galería, contacto…). Es lo que cambias.</td></tr>
+<tr><td><code>src/</code></td><td>Diseño, imágenes y panel de edición. No hace falta tocarla.</td></tr>
+<tr><td><code>build.js</code></td><td>Convierte <code>content/</code> en la web. Netlify lo ejecuta solo.</td></tr>
+<tr><td><code>netlify.toml</code></td><td>Instrucciones para Netlify. No hace falta tocarlo.</td></tr></table>
+
+<h2 id="publicar">2. Publicar la web gratis con panel de edición (recomendado)</h2>
+<p>Con este método editas la web desde un panel con formularios, sin tocar código. Y cada cambio publica la web automáticamente. Necesitas dos cuentas gratuitas: <strong>GitHub</strong> y <strong>Netlify</strong>. Tarda unos 20 minutos.</p>
+<div class="box">Las pantallas de Netlify y GitHub cambian con el tiempo. Si un nombre de menú no coincide, busca el más parecido. Todos los pasos son gratuitos.</div>
+<h3>Paso 1. Crear la cuenta de GitHub y subir los archivos</h3>
+<ol>
+<li>Entra en <a href="https://github.com/signup">github.com/signup</a> y crea una cuenta gratuita.</li>
+<li>Pulsa <strong>New repository</strong> (nuevo repositorio). Ponle un nombre, por ejemplo <code>guadarramaa-web</code>. Déjalo en <strong>Private</strong> (privado).</li>
+<li>Pulsa <strong>uploading an existing file</strong> y arrastra todo el contenido de la carpeta de la web (<code>content</code>, <code>src</code>, <code>dist</code>, <code>build.js</code>, <code>netlify.toml</code>, <code>package.json</code>). Pulsa <strong>Commit changes</strong>.</li>
+<li>Apunta tu <em>usuario/repositorio</em>, por ejemplo <code>maria/guadarramaa-web</code>.</li></ol>
+<h3>Paso 2. Indicar tu repositorio al panel</h3>
+<ol>
+<li>En GitHub abre <code>src/admin/config.yml</code> y pulsa el lápiz para editarlo.</li>
+<li>Cambia la línea <code>repo: TU-USUARIO/TU-REPOSITORIO</code> por la tuya, por ejemplo <code>repo: maria/guadarramaa-web</code>. Pulsa <strong>Commit changes</strong>.</li></ol>
+<h3>Paso 3. Publicar en Netlify</h3>
+<ol>
+<li>Entra en <a href="https://app.netlify.com/signup">app.netlify.com/signup</a> y regístrate con tu cuenta de GitHub (plan gratuito).</li>
+<li>Pulsa <strong>Add new site → Import an existing project → GitHub</strong> y elige tu repositorio.</li>
+<li>Netlify detecta solo la configuración (<code>node build.js</code> y carpeta <code>dist</code>). Pulsa <strong>Deploy</strong>.</li>
+<li>En un minuto tendrás una dirección tipo <code>https://nombre-aleatorio.netlify.app</code>.</li>
+<li>Para cambiar el nombre: <strong>Site configuration → Change site name</strong>. Por ejemplo <code>guadarramaa-guidess</code>, que daría <code>guadarramaa-guidess.netlify.app</code> si está libre.</li></ol>
+<h3>Paso 4. Activar el acceso al panel (una sola vez)</h3>
+<ol>
+<li>En GitHub: <strong>Settings (tu perfil) → Developer settings → OAuth Apps → New OAuth App</strong>.</li>
+<li>Rellena: nombre libre; <em>Homepage URL</em> = la dirección de tu web; <em>Authorization callback URL</em> = <code>https://api.netlify.com/auth/done</code>. Pulsa <strong>Register application</strong>.</li>
+<li>Pulsa <strong>Generate a new client secret</strong>. Copia el <em>Client ID</em> y el <em>Client secret</em>.</li>
+<li>En Netlify: <strong>Site configuration → Access &amp; security → OAuth → Install provider</strong>. Elige <strong>GitHub</strong> y pega los dos datos.</li>
+<li>Abre <code>tu-direccion.netlify.app/admin/</code>, pulsa <strong>Login with GitHub</strong> y ya puedes editar.</li></ol>
+<h3>Paso 5. Poner la dirección de la web</h3>
+<p>En el panel, entra en <strong>Textos de la web → Datos de contacto y ajustes</strong> y escribe la dirección completa en <em>Dirección de la web</em>. Con eso se activan el mapa del sitio y los enlaces canónicos para Google. (Si no lo haces, Netlify la rellena sola al compilar, pero conviene escribirla.)</p>
+
+<h2 id="rapido">3. Alternativa rápida: arrastrar y soltar</h2>
+<p>Sirve para ver la web publicada en dos minutos, pero <strong>sin panel de edición</strong>.</p>
+<ol><li>Entra en <a href="https://app.netlify.com/drop">app.netlify.com/drop</a>.</li>
+<li>Arrastra la carpeta <code>dist</code> entera.</li>
+<li>Netlify te da una dirección <code>.netlify.app</code>.</li></ol>
+<div class="box">Con este método, para cambiar un texto hay que regenerar la carpeta <code>dist</code> con Node.js y volver a subirla. Por eso recomendamos el método de la sección 2. Además, sin la dirección web configurada no se genera el mapa del sitio para Google.</div>
+
+<h2 id="actualizar">4. Cómo actualizar cada cosa</h2>
+<p>Entra en <code>tu-direccion.netlify.app/admin/</code>. Cada vez que pulsas <strong>Publish</strong> (Publicar), la web se actualiza sola en un par de minutos.</p>
+<h3>Añadir una ruta nueva</h3>
+<ol><li><strong>Rutas guiadas → Nueva ruta</strong>.</li><li>Escribe el nombre y rellena los datos reales: duración, distancia, dificultad, desnivel, punto de encuentro, material, precio y descripción. Lo que dejes vacío se muestra como «Por confirmar».</li><li>Sube la foto principal y las demás fotos.</li><li>Pulsa <strong>Publish</strong>. La ruta aparece en la página de rutas, en el menú, en la portada y en el formulario de reservas, con su propia página.</li></ol>
+<p>Para ocultar una ruta sin borrarla, quita la marca <em>Publicada</em>.</p>
+<h3>Cambiar fotografías</h3>
+<ul><li><strong>Portada:</strong> Textos de la web → Portada → Foto de portada.</li><li><strong>Una ruta:</strong> Rutas guiadas → elige la ruta → Foto principal y Más fotografías.</li><li><strong>Galería:</strong> Galería de fotos → Fotografías → añade o cambia fotos. Puedes asociar cada foto a una ruta para que salga al filtrar.</li></ul>
+<div class="box"><strong>Consejo:</strong> antes de subir una foto, reduce su tamaño en <a href="https://squoosh.app">squoosh.app</a> (gratis). Una foto de unos 1600 píxeles de ancho y menos de 400 KB hace que la web cargue rápido. Escribe siempre una descripción corta en la foto de la galería: ayuda a Google y a las personas con lector de pantalla.</div>
+<h3>Modificar precios</h3>
+<p>Rutas guiadas → la ruta → campo <em>Precio</em>. Escribe exactamente lo que quieres mostrar, por ejemplo «25 € por persona».</p>
+<h3>Añadir fechas y actividades</h3>
+<p><strong>Fechas y actividades → Próximas salidas → Add salidas.</strong> Elige la ruta, la fecha, la hora y las plazas. Si es otra actividad que no es una ruta, deja la ruta vacía y escribe su nombre. Las fechas pasadas se ocultan solas.</p>
+<h3>Publicar noticias y artículos</h3>
+<p><strong>Blog y novedades → Nuevo artículo.</strong> Escribe título, fecha, resumen, imagen y texto. Marca <em>Borrador</em> si aún no quieres publicarlo.</p>
+<h3>Cambiar textos y datos de contacto</h3>
+<ul><li><strong>WhatsApp, correo, teléfono, Instagram:</strong> Textos de la web → Datos de contacto y ajustes.</li><li><strong>Portada, servicios, quiénes somos, preguntas frecuentes, opiniones, aviso legal:</strong> cada uno tiene su apartado en Textos de la web.</li></ul>
+<h3>Si no quieres usar el panel</h3>
+<p>Puedes editar los archivos de la carpeta <code>content</code> directamente en GitHub (abre el archivo, pulsa el lápiz, cambia el texto entre comillas y pulsa <strong>Commit changes</strong>). Netlify publica el cambio solo. Respeta las comillas y las comas.</p>
+
+<h2 id="provisional">5. Los textos «PROVISIONAL»</h2>
+<p>Todo lo que no me dijiste está escrito como <span class="prov">texto provisional con fondo amarillo</span>. En los archivos y en el panel empiezan por <code>PROVISIONAL:</code>. <strong>Para sustituirlo, borra esa palabra y escribe tu texto.</strong> Los datos vacíos se ven como «Por confirmar».</p>
+<p>Cuando todo esté completo, en Datos de contacto y ajustes quita la marca <em>Mostrar aviso de prototipo</em> para ocultar la barra superior.</p>
+
+<h2 id="whatsapp">6. WhatsApp y correo</h2>
+<p>En <em>Datos de contacto y ajustes</em> escribe el número de WhatsApp con prefijo y sin espacios ni signos. Ejemplo: <code>34600123456</code>. Si escribes solo 9 cifras españolas, la web añade el 34. Desde ese momento todos los botones de WhatsApp abren la conversación con un mensaje ya escrito, que menciona la ruta si el botón está en su ficha. Mientras esté vacío, los botones llevan al formulario de contacto.</p>
+
+<h3>Comunidad de WhatsApp (voluntaria)</h3>
+<p>La web ya tiene preparada la sección. Hasta que tengas el enlace, el botón <em>Unirme a la comunidad</em> aparece desactivado y marcado como pendiente. Nadie se añade automáticamente: cada persona entra pulsando el enlace.</p>
+<ol><li>Crea la comunidad en WhatsApp y copia su enlace de invitación.</li><li>En el panel: <strong>Textos de la web → Datos de contacto y ajustes → Enlace de invitación a la comunidad de WhatsApp</strong>, pega el enlace y publica.</li></ol>
+<p>La web solo acepta enlaces que empiecen por <code>https://chat.whatsapp.com/</code> o <code>https://whatsapp.com/channel/</code>.</p>
+<h3>Instagram</h3>
+<p>El enlace se crea a partir del usuario <code>@Guadarramaa.guidees</code> y está pendiente de confirmar. Cuando compruebes que abre tu perfil, pega la dirección completa en <em>Enlace completo de Instagram</em> y desaparecerá el aviso. Revisa también la ortografía del usuario.</p>
+<h2 id="formulario">7. El formulario de contacto</h2>
+<p><strong>Sí necesita un servicio, y ya está preparado:</strong> usa <strong>Netlify Forms</strong>, incluido en tu cuenta de Netlify, sin programar. Netlify guarda cada mensaje y puedes recibir un aviso por correo.</p>
+<ol><li>Publica la web y envía un mensaje de prueba desde la página de contacto.</li><li>En Netlify: <strong>Forms</strong> → verás el formulario <em>contacto</em> y los mensajes.</li><li>Para recibir un correo con cada mensaje: <strong>Forms → Form notifications → Add notification → Email notification</strong>.</li></ol>
+<p>El plan gratuito incluye un número limitado de envíos al mes. Consulta el límite actual en la página de precios de Netlify. Las reservas más urgentes siguen yendo por WhatsApp. Alternativas gratuitas si algún día lo necesitas: Formspree o Web3Forms.</p>
+
+<h2 id="seo">8. Aparecer en Google</h2>
+<p>Ya está hecho: títulos y descripciones propios en cada página, una página por ruta, textos con «rutas guiadas Sierra de Guadarrama», «senderismo guiado» y «excursiones guiadas», datos estructurados, mapa del sitio, etiquetas para compartir en redes, web rápida y accesible.</p>
+<p>Lo que depende de ti y marca la diferencia:</p>
+<ol><li>Alta gratuita en <a href="https://search.google.com/search-console">Google Search Console</a>. Añade tu dirección y envía <code>/sitemap.xml</code>.</li><li>Crea tu ficha gratuita en <a href="https://www.google.com/business/">Google Business Profile</a> si encaja con tu actividad.</li><li>Sustituye las ilustraciones por fotos reales y escribe descripciones propias y detalladas de cada ruta. Google premia el contenido original.</li><li>Publica artículos en el blog con regularidad.</li><li>Pide a tus clientes opiniones reales y, con su permiso, publícalas.</li></ol>
+<p>Nadie puede garantizar una posición en Google. El SEO tarda semanas en dar resultados.</p>
+
+<h2 id="limites">9. Costes y límites</h2>
+<ul><li><strong>Coste: 0 €.</strong> GitHub, Netlify (plan gratuito), el panel de edición y el formulario no cuestan nada. La dirección será <code>algo.netlify.app</code>.</li><li>Los planes gratuitos tienen límites de uso (ancho de banda, envíos de formulario) que Netlify puede modificar. Para una web de este tamaño suelen sobrar.</li><li>Las tipografías se cargan desde Google Fonts. Si quieres evitarlo por privacidad, se pueden alojar en la propia web.</li><li>El mapa de OpenStreetMap solo se carga cuando la persona pulsa el botón.</li><li>La web no usa cookies ni analítica, así que no necesita banner de cookies. Si añades Google Analytics u otros servicios, sí lo necesitaría.</li><li>Netlify Forms, Netlify y GitHub son servicios de terceros. Revisa sus condiciones actuales.</li></ul>
+
+<h2 id="pendiente">10. Lo que falta por poner</h2>
+<ul>
+<li>Fotografías reales de la Sierra de Guadarrama. Las actuales son ilustraciones provisionales. Usa solo fotos tuyas o con licencia que lo permita.</li>
+<li>Datos reales de las rutas de El Escorial y del Valle de la Fuenfría.</li>
+<li>Número de WhatsApp, correo y teléfono.</li>
+<li>Textos de la empresa, equipo, titulaciones, seguros y servicios.</li>
+<li>Fechas de las salidas.</li>
+<li>Opiniones reales de clientes (la sección muestra huecos marcados hasta entonces).</li>
+<li><strong>Seguros y requisitos legales:</strong> revisa con un profesional los seguros y los requisitos legales de la actividad antes de comercializar las salidas. La web no afirma que exista ningún seguro ni acreditación distinta de las que indicaste. Consulta <code>PENDIENTE-DE-REVISAR.md</code>.</li>
+<li><strong>Aviso legal y política de privacidad</strong> reales, con tus datos de titular. Los textos incluidos son un esqueleto, no asesoramiento legal.</li></ul>
+</main></body></html>
