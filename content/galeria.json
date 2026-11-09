@@ -4,7 +4,7 @@
       "imagen": "/img/uploads/156895431master.jpg",
       "texto": "La Maliciosa",
       "ruta": "",
-      "forma": "wide"
+      "forma": "normal"
     },
     {
       "imagen": "/img/uploads/145867202master.jpg",
@@ -22,7 +22,7 @@
       "imagen": "/img/uploads/156825712master.jpg",
       "texto": "Vistas A Cercedilla, Mirador Luis Rosales",
       "ruta": "",
-      "forma": ""
+      "forma": "tall"
     },
     {
       "imagen": "/img/uploads/144446172master.jpg",
@@ -52,7 +52,7 @@
       "imagen": "/img/uploads/158957679master.jpg",
       "texto": "Cabra De La Maliciosa",
       "ruta": "",
-      "forma": "tall"
+      "forma": "wide"
     },
     {
       "imagen": "/img/uploads/155641313master.jpg",
