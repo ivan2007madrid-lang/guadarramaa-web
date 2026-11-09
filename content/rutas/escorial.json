@@ -2,7 +2,7 @@
   "resumen": "",
   "km": "12 km",
   "dificultad": "Moderada",
-  "lng": "",
+  "lng": "-4.132418",
   "duracion": "5 h y 17 mins",
   "precio": "",
   "material": "",
@@ -23,5 +23,5 @@
   "publicada": true,
   "titulo": "Ruta de El Escorial",
   "destacada": true,
-  "lat": ""
+  "lat": "40.585279"
 }
