@@ -1,8 +1,8 @@
 {
   "fotos": [
     {
-      "imagen": "",
-      "texto": "Cresta serrana al amanecer",
+      "imagen": "/img/uploads/156895431master.jpg",
+      "texto": "La Maliciosa",
       "ruta": "",
       "forma": "wide"
     },
@@ -19,9 +19,9 @@
       "forma": "tall"
     },
     {
-      "imagen": "",
-      "texto": "Atardecer sobre la sierra",
-      "ruta": "escorial",
+      "imagen": "/img/uploads/156825712master.jpg",
+      "texto": "Vistas A Cercedilla, Mirador Luis Rosales",
+      "ruta": "",
       "forma": ""
     },
     {
@@ -49,14 +49,14 @@
       "forma": ""
     },
     {
-      "imagen": "",
-      "texto": "Panorámica de la sierra",
-      "ruta": "escorial",
-      "forma": "wide"
+      "imagen": "/img/uploads/158957679master.jpg",
+      "texto": "Cabra De La Maliciosa",
+      "ruta": "",
+      "forma": "tall"
     },
     {
-      "imagen": "",
-      "texto": "Bruma en el bosque",
+      "imagen": "/img/uploads/155641313master.jpg",
+      "texto": "Vistas Desde 7 Picos ",
       "ruta": "",
       "forma": ""
     }
