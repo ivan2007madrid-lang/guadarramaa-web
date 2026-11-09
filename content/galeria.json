@@ -1,7 +1,7 @@
 {
   "fotos": [
     {
-      "imagen": "/img/uploads/170617184master.jpg",
+      "imagen": "",
       "texto": "Cresta serrana al amanecer",
       "ruta": "fuenfria",
       "forma": "wide"
@@ -13,8 +13,8 @@
       "forma": ""
     },
     {
-      "imagen": "",
-      "texto": "Ladera de pinar",
+      "imagen": "/img/uploads/170617184master.jpg",
+      "texto": "Atardecer Desde Monte Abantos",
       "ruta": "",
       "forma": "tall"
     },
@@ -25,8 +25,8 @@
       "forma": ""
     },
     {
-      "imagen": "",
-      "texto": "Horizonte de cumbres",
+      "imagen": "/img/uploads/144446172master.jpg",
+      "texto": "La Bola Del Mundo",
       "ruta": "",
       "forma": "wide"
     },
