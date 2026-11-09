@@ -7,19 +7,19 @@
       "icono": "route"
     },
     {
-      "titulo": "PROVISIONAL: Nombre del servicio",
-      "texto": "PROVISIONAL: Qué incluye este servicio.",
-      "icono": "group"
-    },
-    {
-      "titulo": "PROVISIONAL: Nombre del servicio",
-      "texto": "PROVISIONAL: Qué incluye este servicio.",
+      "titulo": "Aprendizaje Orientación",
+      "texto": "Aprendizaje de uso de mapa y brújula para orientarse en la montaña",
       "icono": "compass"
     },
     {
-      "titulo": "PROVISIONAL: Nombre del servicio",
-      "texto": "PROVISIONAL: Qué incluye este servicio.",
+      "titulo": "Uso App Mapas",
+      "texto": "Uso de Wikiloc para aprender a orientarse con herramientas tecnológicas",
       "icono": "camera"
+    },
+    {
+      "titulo": "Aprendizaje Datos Curiosos",
+      "texto": "Aprenderás cosas nuevas y lugares poco conocidos de la Sierra de Guadarrama",
+      "icono": "mountain"
     }
   ]
 }
