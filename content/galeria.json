@@ -3,13 +3,13 @@
     {
       "imagen": "",
       "texto": "Cresta serrana al amanecer",
-      "ruta": "fuenfria",
+      "ruta": "",
       "forma": "wide"
     },
     {
-      "imagen": "",
-      "texto": "Valle con niebla matinal",
-      "ruta": "fuenfria",
+      "imagen": "/img/uploads/145867202master.jpg",
+      "texto": "Vistas A Valle De Los Caidos",
+      "ruta": "",
       "forma": ""
     },
     {
@@ -31,9 +31,9 @@
       "forma": "normal"
     },
     {
-      "imagen": "",
-      "texto": "Sendero entre pinos",
-      "ruta": "fuenfria",
+      "imagen": "/img/uploads/144077379master.jpg",
+      "texto": "Vistas A La Bola Del Mundo",
+      "ruta": "",
       "forma": ""
     },
     {
