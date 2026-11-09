@@ -1,14 +1,64 @@
 {
   "fotos": [
-    { "imagen": "", "texto": "Cresta serrana al amanecer", "ruta": "fuenfria", "forma": "wide" },
-    { "imagen": "", "texto": "Valle con niebla matinal", "ruta": "fuenfria", "forma": "" },
-    { "imagen": "", "texto": "Ladera de pinar", "ruta": "", "forma": "tall" },
-    { "imagen": "", "texto": "Atardecer sobre la sierra", "ruta": "escorial", "forma": "" },
-    { "imagen": "", "texto": "Horizonte de cumbres", "ruta": "", "forma": "wide" },
-    { "imagen": "", "texto": "Sendero entre pinos", "ruta": "fuenfria", "forma": "" },
-    { "imagen": "", "texto": "Luz de tarde en la ladera", "ruta": "escorial", "forma": "tall" },
-    { "imagen": "", "texto": "Primera luz en las cumbres", "ruta": "", "forma": "" },
-    { "imagen": "", "texto": "Panorámica de la sierra", "ruta": "escorial", "forma": "wide" },
-    { "imagen": "", "texto": "Bruma en el bosque", "ruta": "", "forma": "" }
+    {
+      "imagen": "/img/uploads/170617184master.jpg",
+      "texto": "Cresta serrana al amanecer",
+      "ruta": "fuenfria",
+      "forma": "wide"
+    },
+    {
+      "imagen": "",
+      "texto": "Valle con niebla matinal",
+      "ruta": "fuenfria",
+      "forma": ""
+    },
+    {
+      "imagen": "",
+      "texto": "Ladera de pinar",
+      "ruta": "",
+      "forma": "tall"
+    },
+    {
+      "imagen": "",
+      "texto": "Atardecer sobre la sierra",
+      "ruta": "escorial",
+      "forma": ""
+    },
+    {
+      "imagen": "",
+      "texto": "Horizonte de cumbres",
+      "ruta": "",
+      "forma": "wide"
+    },
+    {
+      "imagen": "",
+      "texto": "Sendero entre pinos",
+      "ruta": "fuenfria",
+      "forma": ""
+    },
+    {
+      "imagen": "",
+      "texto": "Luz de tarde en la ladera",
+      "ruta": "escorial",
+      "forma": "tall"
+    },
+    {
+      "imagen": "",
+      "texto": "Primera luz en las cumbres",
+      "ruta": "",
+      "forma": ""
+    },
+    {
+      "imagen": "",
+      "texto": "Panorámica de la sierra",
+      "ruta": "escorial",
+      "forma": "wide"
+    },
+    {
+      "imagen": "",
+      "texto": "Bruma en el bosque",
+      "ruta": "",
+      "forma": ""
+    }
   ]
 }
