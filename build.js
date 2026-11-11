@@ -351,9 +351,7 @@ function header(cur) {
   const subs = RUTAS.map(r => '<a href="' + rUrl(r) + '">' + esc(r.titulo) + '</a>').join('') + '<a href="/rutas/" class="all">Ver todas las rutas</a>';
   const links = NAV.map(([id, t]) => id === 'rutas' ? '<div class="has-sub"><a href="/rutas/"' + isCur(id) + '>' + t + '</a><div class="sub">' + subs + '</div></div>' : '<a href="/' + id + '/"' + isCur(id) + '>' + t + '</a>').join('');
   const mlinks = NAV.map(([id, t]) => '<a href="/' + id + '/"' + isCur(id) + '>' + t + '</a>' + (id === 'rutas' ? RUTAS.map(r => '<a class="sub-l" href="' + rUrl(r) + '">' + esc(r.titulo) + '</a>').join('') : '')).join('');
-  const miss = missingList();
   return '<a class="skip" href="#contenido">Saltar al contenido</a>' +
-    (AVISOS ? '<div class="notice"><div class="wrap">Versión de prueba · Los textos con fondo amarillo y los datos «Por confirmar» son provisionales' + (miss.length ? ' · Pendiente: ' + miss.join(', ') : '') + '</div></div>' : '') +
     '<header class="site-head" id="top"><div class="wrap bar">' + logo() + '<nav class="nav" aria-label="Principal">' + links + '<a class="btn btn-wa btn-s" href="' + wa() + '"' + waAttrs() + '>' + ic('wa', 18) + ' Reservar</a></nav>' +
     '<button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">' + ic('menu', 26) + '</button></div>' +
     '<div class="menu" id="menu" hidden><div class="wrap">' + mlinks + '<a class="btn btn-wa" href="' + wa() + '"' + waAttrs() + '>' + ic('wa', 20) + ' Reservar por WhatsApp</a></div></div></header>';
