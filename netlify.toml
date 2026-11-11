@@ -5,3 +5,7 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+# Funciones del sistema de valoraciones (carpeta netlify/functions)
+[functions]
+  directory = "netlify/functions"

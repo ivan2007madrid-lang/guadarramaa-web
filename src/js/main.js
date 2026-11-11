@@ -154,4 +154,79 @@
         .catch(function () { $('#form-err').hidden = false; btn.disabled = false; btn.textContent = 'Enviar mensaje'; });
     });
   }
+  /* Valoraciones públicas (se cargan desde /api/valoraciones) */
+  var vroot = $('[data-valoraciones]');
+  if (vroot) {
+    var vlist = $('[data-val-list]', vroot), vsum = $('[data-val-sum]', vroot), vempty = $('[data-val-empty]', vroot), vmore = $('[data-val-more]', vroot), vload = $('[data-val-loaderr]', vroot);
+    var vform = $('#val-form'), vstart = Date.now(), vitems = [], vshown = 0, VPASO = 6;
+    var STAR = vroot.getAttribute('data-star') || '';
+    var mkStars = function (n, off) { var h = ''; for (var i = 1; i <= 5; i++) h += '<span' + (i > n ? ' class="off-s" style="opacity:.28"' : '') + '>' + STAR + '</span>'; return h; };
+    var fmtMedia = function (m) { return String(m).replace('.', ','); };
+    var fmtFecha = function (iso) { try { return new Date(iso).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' }); } catch (e) { return ''; } };
+    var drawSum = function (total, media) {
+      if (!total) { vsum.hidden = true; return; }
+      vsum.hidden = false; vsum.innerHTML = '';
+      var b = document.createElement('b'); b.textContent = fmtMedia(media);
+      var st = document.createElement('span'); st.className = 'stars'; st.setAttribute('role', 'img'); st.setAttribute('aria-label', 'Puntuación media: ' + fmtMedia(media) + ' de 5'); st.innerHTML = mkStars(Math.round(media));
+      var tx = document.createElement('span'); tx.textContent = total === 1 ? '1 valoración' : total + ' valoraciones';
+      vsum.appendChild(b); vsum.appendChild(st); vsum.appendChild(tx);
+    };
+    var card = function (it) {
+      var f = document.createElement('figure'); f.className = 'quote';
+      var s = document.createElement('div'); s.className = 'stars'; s.setAttribute('role', 'img'); s.setAttribute('aria-label', it.estrellas + ' de 5'); s.innerHTML = mkStars(it.estrellas);
+      var q = document.createElement('blockquote'); var p = document.createElement('p'); p.className = 'val-text'; p.textContent = it.comentario; q.appendChild(p);
+      var c = document.createElement('figcaption'); var n = document.createElement('strong'); n.textContent = it.nombre; c.appendChild(n);
+      var d = fmtFecha(it.fecha); if (d) { var sp = document.createElement('span'); sp.textContent = d; c.appendChild(sp); }
+      f.appendChild(s); f.appendChild(q); f.appendChild(c); return f;
+    };
+    var drawList = function () {
+      var end = Math.min(vitems.length, vshown);
+      vlist.innerHTML = ''; vitems.slice(0, end).forEach(function (it) { vlist.appendChild(card(it)); });
+      vempty.hidden = vitems.length > 0; vmore.hidden = end >= vitems.length;
+    };
+    var apply = function (d) { vitems = d.items || []; vshown = Math.max(vshown, VPASO); drawSum(d.total, d.media); drawList(); };
+    fetch('/api/valoraciones', { headers: { Accept: 'application/json' } })
+      .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(function (d) { vload.hidden = true; apply(d); })
+      .catch(function () { vload.hidden = false; });
+    $('button', vmore).addEventListener('click', function () { vshown += VPASO; drawList(); });
+
+    /* Estrellas interactivas */
+    var rows = $$('.star-in label', vform), radios = $$('.star-in input', vform);
+    var paint = function (n) { rows.forEach(function (l, i) { l.classList.toggle('on', i < n); }); };
+    var cur = function () { var c = radios.filter(function (r) { return r.checked; })[0]; return c ? +c.value : 0; };
+    rows.forEach(function (l, i) {
+      l.addEventListener('mouseenter', function () { paint(i + 1); });
+      l.addEventListener('mouseleave', function () { paint(cur()); });
+    });
+    radios.forEach(function (r) { r.addEventListener('change', function () { paint(cur()); var e = $('#v-e-err'); if (e) e.textContent = ''; }); });
+
+    /* Contador de caracteres */
+    var msg = $('#v-msg'), cnt = $('[data-count]', vform);
+    msg.addEventListener('input', function () { cnt.textContent = msg.value.length + ' / 600'; });
+
+    /* Envío */
+    vform.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      var nombre = $('#v-nombre'), fail = $('#val-fail'), bad = [], nv = nombre.value.trim(), mv = msg.value.trim(), ev5 = cur();
+      var setErr = function (el, t) { var box = el.closest('label') || el.closest('fieldset'); var sp = box && box.querySelector('[data-err]'); if (sp) sp.textContent = t; el.setAttribute('aria-invalid', String(!!t)); if (t) bad.push(el); };
+      setErr(nombre, nv ? '' : 'Escribe tu nombre.');
+      setErr(radios[0], ev5 ? '' : 'Elige una puntuación de 1 a 5 estrellas.');
+      setErr(msg, mv ? '' : 'Escribe tu comentario.');
+      fail.hidden = true;
+      if (bad.length) { bad[0].focus(); return; }
+      var btn = vform.querySelector('button[type=submit]'); btn.disabled = true; btn.textContent = 'Publicando…';
+      var reset = function () { btn.disabled = false; btn.textContent = 'Publicar valoración'; };
+      fetch('/api/valoraciones', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({ nombre: nv, estrellas: ev5, comentario: mv, web: $('input[name=web]', vform).value, t: vstart })
+      }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (x) {
+          if (!x.ok || !x.d.ok) { fail.textContent = x.d.mensaje || 'No se ha podido publicar. Inténtalo de nuevo.'; fail.hidden = false; reset(); return; }
+          if (x.d.item) { vitems.unshift(x.d.item); vshown = Math.max(vshown, VPASO) + 1; drawSum(x.d.total, x.d.media); drawList(); vload.hidden = true; }
+          vform.hidden = true; var ok = $('#val-ok'); ok.hidden = false; ok.focus();
+        })
+        .catch(function () { fail.textContent = 'No se ha podido publicar. Revisa tu conexión e inténtalo de nuevo.'; fail.hidden = false; reset(); });
+    });
+  }
 })();

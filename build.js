@@ -264,10 +264,27 @@ function serviceCard(s) {
   return '<article class="svc rv"><span class="svc-i">' + ic(icon, 28) + '</span><h3>' + T(s.titulo) + '</h3><p>' + T(s.texto) + '</p></article>';
 }
 function quoteCards() {
-  const items = OPI.items && OPI.items.length ? OPI.items : [{}, {}, {}];
-  return '<div class="quotes">' + items.map(o => has(o.texto) && !isProv(o.texto)
-    ? '<figure class="quote rv"><div class="stars" role="img" aria-label="' + (o.estrellas || 5) + ' de 5">' + Array.from({ length: Number(o.estrellas) || 5 }, () => ic('star', 18)).join('') + '</div><blockquote>' + esc(o.texto) + '</blockquote><figcaption><strong>' + esc(o.autor) + '</strong>' + (has(o.ruta) ? '<span>' + esc((routeById(o.ruta) || {}).titulo || o.ruta) + '</span>' : '') + '</figcaption></figure>'
-    : '<figure class="quote rv"><div class="stars off" aria-hidden="true">' + [1, 2, 3, 4, 5].map(() => ic('star', 18)).join('') + '</div><blockquote><mark class="prov">Aquí irá la opinión real de un cliente, con su permiso.</mark></blockquote><figcaption><strong><mark class="prov">Nombre del cliente</mark></strong><span class="pend">Ruta realizada</span></figcaption></figure>').join('') + '</div>';
+  /* Valoraciones públicas: las tarjetas las pinta main.js desde /api/valoraciones.
+     Las opiniones de content/opiniones.json se conservan en el panel pero ya no se muestran. */
+  const star = ic('star', 18);
+  const radios = [1, 2, 3, 4, 5].map(n => '<input type="radio" name="estrellas" id="v-e' + n + '" value="' + n + '"><label for="v-e' + n + '" title="' + n + (n === 1 ? ' estrella' : ' estrellas') + '"><span class="sr">' + n + (n === 1 ? ' estrella' : ' estrellas') + '</span>' + ic('star', 30) + '</label>').join('');
+  return '<div data-valoraciones data-star=\'' + star.replace(/'/g, '&#39;') + '\'>' +
+    '<div class="val-sum" data-val-sum hidden></div>' +
+    '<div class="quotes" data-val-list></div>' +
+    '<p class="empty-n" data-val-empty hidden>Todavía no hay valoraciones. Cuéntanos tu experiencia y sé la primera persona en publicarla.</p>' +
+    '<p class="val-err" data-val-loaderr role="alert" hidden>No se han podido cargar las valoraciones ahora mismo. Puedes publicar la tuya igualmente.</p>' +
+    '<div class="val-more" data-val-more hidden><button type="button" class="btn btn-o btn-s">Ver más valoraciones</button></div>' +
+    '<p class="val-note">Opiniones publicadas por los visitantes</p>' +
+    '<noscript><p class="empty-n">Para ver y publicar valoraciones necesitas activar JavaScript en tu navegador.</p></noscript>' +
+    '<div class="val-form rv" id="valorar"><h3>Deja tu valoración</h3>' +
+    '<div class="done" id="val-ok" hidden tabindex="-1"><h3>¡Gracias por tu valoración!</h3><p>Ya está publicada. Ahora puedes verla en esta sección.</p></div>' +
+    '<form id="val-form" novalidate><p class="hp" aria-hidden="true"><label>No rellenar<input name="web" tabindex="-1" autocomplete="off"></label></p>' +
+    '<div class="fg"><label for="v-nombre">Nombre<input id="v-nombre" name="nombre" maxlength="40" autocomplete="given-name" required><span class="err" data-err></span></label>' +
+    '<fieldset class="star-in" aria-describedby="v-e-err"><legend>Puntuación</legend><div class="star-row">' + radios + '</div><span class="err" id="v-e-err" data-err></span></fieldset>' +
+    '<label class="full" for="v-msg">Comentario<textarea id="v-msg" name="comentario" rows="4" maxlength="600" required></textarea><span class="count" data-count aria-live="off">0 / 600</span><span class="err" data-err></span></label></div>' +
+    '<p class="val-priv">Se publicarán tu nombre y tu comentario. No escribas teléfonos, correos ni otros datos personales. Más información en la <a href="/legal/">política de privacidad</a>.</p>' +
+    '<p class="form-err" id="val-fail" role="alert" hidden></p>' +
+    '<div><button class="btn btn-a" type="submit">Publicar valoración</button></div></form></div></div>';
 }
 function faqList(items, limit) {
   items = limit ? items.slice(0, limit) : items;
@@ -630,7 +647,7 @@ fs.mkdirSync(phDir, { recursive: true });
 PH.forEach(([seed, mood], name) => fs.writeFileSync(path.join(phDir, name), landscapeSVG(seed, mood)));
 fs.writeFileSync(path.join(OUT, 'robots.txt'), 'User-agent: *\nAllow: /\nDisallow: /admin/\n' + (BASE ? 'Sitemap: ' + BASE + '/sitemap.xml\n' : ''));
 if (BASE) fs.writeFileSync(path.join(OUT, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + SITEMAP.map(u => '  <url><loc>' + BASE + u + '</loc></url>').join('\n') + '\n</urlset>\n');
-fs.writeFileSync(path.join(OUT, '_headers'), '/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n/img/*\n  Cache-Control: public, max-age=604800\n/favicon.svg\n  Cache-Control: public, max-age=604800\n');
+fs.writeFileSync(path.join(OUT, '_headers'), '/moderar/*\n  X-Robots-Tag: noindex, nofollow\n  Cache-Control: no-store\n/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n/img/*\n  Cache-Control: public, max-age=604800\n/favicon.svg\n  Cache-Control: public, max-age=604800\n');
 
 console.log('✔ Web generada en dist/ · ' + SITEMAP.length + ' páginas · ' + RUTAS.length + ' rutas · ' + POSTS.length + ' artículos · ' + PH.size + ' ilustraciones provisionales');
 if (!BASE) console.log('ℹ Falta la dirección web (content/ajustes.json → url_sitio). Sin ella no se genera sitemap.xml ni las etiquetas canónicas. En Netlify se completa sola.');
