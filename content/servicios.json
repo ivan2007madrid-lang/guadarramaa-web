@@ -8,17 +8,17 @@
     },
     {
       "titulo": "Aprendizaje Orientación",
-      "texto": "Aprendizaje de uso de mapa y brújula para orientarse en la montaña",
+      "texto": "Aprenderás a utilizar mapas y brújulas para orientarte en la montaña, interpretar el terreno y descubrir cómo planificar tus propios recorridos con seguridad.",
       "icono": "compass"
     },
     {
       "titulo": "Uso App Mapas",
-      "texto": "Uso de Wikiloc para aprender a orientarse con herramientas tecnológicas",
+      "texto": "Aprenderás a utilizar Wikiloc y otras herramientas digitales para seguir recorridos, interpretar tracks, localizar puntos de interés y orientarte durante tus aventuras en la montaña.",
       "icono": "camera"
     },
     {
       "titulo": "Aprendizaje Datos Curiosos",
-      "texto": "Aprenderás cosas nuevas y lugares poco conocidos de la Sierra de Guadarrama",
+      "texto": "Descubrirás historias, curiosidades, rincones poco conocidos y secretos naturales de la Sierra de Guadarrama, aprendiendo a mirar la montaña desde una perspectiva diferente.",
       "icono": "mountain"
     }
   ]
