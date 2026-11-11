@@ -1,6 +1,6 @@
 {
   "resumen": "Una agradable ruta circular desde Cercedilla que nos permite descubrir los históricos puentes de Santa Catalina y del Molino, recorriendo caminos entre bosques y naturaleza hasta llegar al entorno del Albergue Juvenil Las Dehesas. Un recorrido sencillo de 8,5 km, ideal para disfrutar de la tranquilidad y los paisajes de la Sierra de Guadarrama.",
-  "km": "8,5 km",
+  "km": "8,5",
   "dificultad": "Fácil",
   "lng": "-4.0567",
   "duracion": "4 h y 3 mins",
@@ -16,6 +16,7 @@
     "/img/uploads/170933389master.jpg",
     "/img/uploads/170933399master.jpg"
   ],
+  "wikiloc": "295268539",
   "desnivel": "211",
   "semilla": 8,
   "imagen": "/img/uploads/170934585master.jpg",
@@ -23,6 +24,5 @@
   "publicada": true,
   "titulo": "Ruta del Valle de la Fuenfría",
   "destacada": true,
-  "lat": "40.7411",
-  "wikiloc": "295268539"
+  "lat": "40.7411"
 }
