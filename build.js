@@ -58,6 +58,10 @@ const SERV = readJSON('servicios.json');
 const FAQ = readJSON('faq.json');
 const GAL = readJSON('galeria.json');
 const OPI = readJSON('opiniones.json');
+/* Imagen de la página /opiniones/. Si falta el archivo content/opiniones-pagina.json se usa la foto inicial
+   (src/img/uploads/opiniones-portada.jpg). Si el archivo existe, manda lo que ponga el panel (incluido «sin imagen»). */
+const OPIP = fs.existsSync(path.join(CT, 'opiniones-pagina.json')) ? readJSON('opiniones-pagina.json')
+  : (fs.existsSync(path.join(SRC, 'img', 'uploads', 'opiniones-portada.jpg')) ? { imagen: '/img/uploads/opiniones-portada.jpg', descripcion: 'Grupo de senderistas en una ruta de montaña, con nieve al fondo' } : {});
 const SAL = readJSON('salidas.json');
 const LEGAL = readJSON('legal.json');
 
@@ -571,7 +575,9 @@ page('opiniones', {
   title: 'Opiniones de quienes caminan con nosotros | ' + NAME,
   desc: 'Opiniones, puntuación media y valoraciones publicadas por quienes han hecho rutas guiadas con ' + NAME + ' en la Sierra de Guadarrama. Comparte la tuya.',
   nav: 'opiniones',
+  image: has(OPIP.imagen) ? OPIP.imagen : null,
   body: phead('Opiniones', 'Opiniones de quienes caminan con nosotros', 'Lee lo que cuentan otras personas y, si has caminado con nosotros, deja tu valoración. No hace falta registrarse.') +
+    (has(OPIP.imagen) ? '<div class="wrap op-hero-w"><figure class="op-hero"><img src="' + esc(OPIP.imagen) + '" alt="' + esc(OPIP.descripcion || '') + '" width="1600" height="720" fetchpriority="high" decoding="async"></figure></div>' : '') +
     '<section class="sec"><div class="wrap val-page">' + quoteCards(true) + '</div></section>' + ctaBand()
 });
 
