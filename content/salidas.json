@@ -4,21 +4,23 @@
       "ruta": "escorial",
       "titulo": "Bosque De La Herrería",
       "fecha": "2026-10-24",
-      "hora": "",
-      "plazas": "",
+      "hora": "8:30",
+      "plazas": "15",
       "nota": ""
     },
     {
       "ruta": "fuenfria",
       "titulo": "La Fuenfría Y Las Dehesas",
       "fecha": "2026-11-07",
-      "hora": "",
-      "plazas": "",
+      "hora": "8:30",
+      "plazas": "15",
       "nota": ""
     },
     {
       "titulo": "Ruta De Casa De Campo",
-      "fecha": "2026-11-14"
+      "fecha": "2026-11-14",
+      "hora": "8:30",
+      "plazas": "15"
     }
   ]
 }
