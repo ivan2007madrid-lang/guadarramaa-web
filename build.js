@@ -301,10 +301,53 @@ function blogCard(p) {
   return '<article class="pcard rv"><a class="pcard-img" href="/blog/' + p.slug + '/" tabindex="-1" aria-hidden="true">' + pic(p.imagen, '', { seed, cls: 'r169' }) + '</a><div class="pcard-b"><time datetime="' + esc(String(p.fecha).slice(0, 10)) + '">' + esc(fmtDate(p.fecha)) + '</time><h3><a href="/blog/' + p.slug + '/">' + T(p.titulo) + '</a></h3><p>' + T(p.resumen) + '</p><a class="link" href="/blog/' + p.slug + '/">Leer artículo</a></div></article>';
 }
 function galleryItems(limit, group) {
-  const list = (GAL.fotos || []).slice(0, limit || 999);
-  return list.map((g, i) => {
+  const list = (GAL.fotos || []).map(g => ({
+    imagen: g.imagen,
+    texto: g.texto || '',
+    forma: g.forma || '',
+    ruta: g.ruta || ''
+  }));
+
+  RUTAS.forEach(r => {
+    const fotos = [];
+
+    if (has(r.imagen)) {
+      fotos.push({
+        imagen: r.imagen,
+        texto: r.titulo || '',
+        forma: '',
+        ruta: r.id
+      });
+    }
+
+    (r.fotos || []).forEach(f => {
+      const imagen = typeof f === 'string' ? f : f && f.imagen;
+
+      if (has(imagen)) {
+        fotos.push({
+          imagen,
+          texto: (f && typeof f === 'object' && (f.descripcion || f.texto)) || r.titulo || '',
+          forma: (f && typeof f === 'object' && f.forma) || '',
+          ruta: r.id
+        });
+      }
+    });
+
+    fotos.forEach(f => {
+      const existente = list.find(g => g.imagen === f.imagen);
+
+      if (existente) {
+        if (!existente.ruta) existente.ruta = f.ruta;
+      } else {
+        list.push(f);
+      }
+    });
+  });
+
+  return list.slice(0, limit || 999).map((g, i) => {
     const seed = hashSeed((g.texto || '') + i), real = has(g.imagen);
     const url = real ? g.imagen : phUrl(moodFor(seed), seed);
+
     return '<a class="gi rv ' + esc(g.forma || '') + '" href="' + esc(url) + '" data-lb data-ruta="' + esc(g.ruta || '') + '" data-alt="' + esc(g.texto || '') + '" aria-label="Ampliar: ' + esc(g.texto || 'fotografía') + '"><img src="' + esc(url) + '" alt="' + esc(g.texto || '') + '" loading="lazy" decoding="async">' + (!real && AVISOS ? '<span class="ph-tag">Foto provisional</span>' : '') + '</a>';
   }).join('');
 }
