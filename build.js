@@ -263,28 +263,30 @@ function serviceCard(s) {
   const icon = SERV_ICONS.includes(s.icono) ? s.icono : 'route';
   return '<article class="svc rv"><span class="svc-i">' + ic(icon, 28) + '</span><h3>' + T(s.titulo) + '</h3><p>' + T(s.texto) + '</p></article>';
 }
-function quoteCards() {
+function quoteCards(full) {
   /* Valoraciones públicas: las tarjetas las pinta main.js desde /api/valoraciones.
+     full = true → página /opiniones/ (todas + formulario). full = false → muestra de 3 en la portada.
      Las opiniones de content/opiniones.json se conservan en el panel pero ya no se muestran. */
   const star = ic('star', 18);
   const radios = [1, 2, 3, 4, 5].map(n => '<input type="radio" name="estrellas" id="v-e' + n + '" value="' + n + '"><label for="v-e' + n + '" title="' + n + (n === 1 ? ' estrella' : ' estrellas') + '"><span class="sr">' + n + (n === 1 ? ' estrella' : ' estrellas') + '</span>' + ic('star', 30) + '</label>').join('');
-  return '<div data-valoraciones data-star=\'' + star.replace(/'/g, '&#39;') + '\'>' +
-    '<div class="val-sum" data-val-sum hidden></div>' +
-    '<div class="quotes" data-val-list></div>' +
-    '<p class="empty-n" data-val-empty hidden>Todavía no hay valoraciones. Cuéntanos tu experiencia y sé la primera persona en publicarla.</p>' +
-    '<p class="val-err" data-val-loaderr role="alert" hidden>No se han podido cargar las valoraciones ahora mismo. Puedes publicar la tuya igualmente.</p>' +
-    '<div class="val-more" data-val-more hidden><button type="button" class="btn btn-o btn-s">Ver más valoraciones</button></div>' +
-    '<p class="val-note">Opiniones publicadas por los visitantes</p>' +
-    '<noscript><p class="empty-n">Para ver y publicar valoraciones necesitas activar JavaScript en tu navegador.</p></noscript>' +
-    '<div class="val-form rv" id="valorar"><h3>Deja tu valoración</h3>' +
-    '<div class="done" id="val-ok" hidden tabindex="-1"><h3>¡Gracias por tu valoración!</h3><p>Ya está publicada. Ahora puedes verla en esta sección.</p></div>' +
+  const form = '<div class="val-form rv" id="valorar"><h3>Deja tu valoración</h3>' +
+    '<div class="done" id="val-ok" hidden tabindex="-1"><h3>¡Gracias por tu valoración!</h3><p>Ya está publicada. Ahora puedes verla en esta página.</p></div>' +
     '<form id="val-form" novalidate><p class="hp" aria-hidden="true"><label>No rellenar<input name="web" tabindex="-1" autocomplete="off"></label></p>' +
     '<div class="fg"><label for="v-nombre">Nombre<input id="v-nombre" name="nombre" maxlength="40" autocomplete="given-name" required><span class="err" data-err></span></label>' +
     '<fieldset class="star-in" aria-describedby="v-e-err"><legend>Puntuación</legend><div class="star-row">' + radios + '</div><span class="err" id="v-e-err" data-err></span></fieldset>' +
     '<label class="full" for="v-msg">Comentario<textarea id="v-msg" name="comentario" rows="4" maxlength="600" required></textarea><span class="count" data-count aria-live="off">0 / 600</span><span class="err" data-err></span></label></div>' +
     '<p class="val-priv">Se publicarán tu nombre y tu comentario. No escribas teléfonos, correos ni otros datos personales. Más información en la <a href="/legal/">política de privacidad</a>.</p>' +
     '<p class="form-err" id="val-fail" role="alert" hidden></p>' +
-    '<div><button class="btn btn-a" type="submit">Publicar valoración</button></div></form></div></div>';
+    '<div><button class="btn btn-a" type="submit">Publicar valoración</button></div></form></div>';
+  return '<div data-valoraciones' + (full ? '' : ' data-limit="3"') + ' data-star=\'' + star.replace(/'/g, '&#39;') + '\'>' +
+    '<div class="val-sum" data-val-sum hidden></div>' +
+    '<div class="quotes" data-val-list></div>' +
+    '<p class="empty-n" data-val-empty hidden>Todavía no hay valoraciones. ' + (full ? 'Cuéntanos tu experiencia y sé la primera persona en publicarla.' : '<a href="/opiniones/#valorar">Sé la primera persona en publicar la suya</a>.') + '</p>' +
+    '<p class="val-err" data-val-loaderr role="alert" hidden>No se han podido cargar las valoraciones ahora mismo.' + (full ? ' Puedes publicar la tuya igualmente.' : '') + '</p>' +
+    (full ? '<div class="val-more" data-val-more hidden><button type="button" class="btn btn-o btn-s">Ver más valoraciones</button></div>' : '') +
+    '<p class="val-note">Opiniones publicadas por los visitantes</p>' +
+    '<noscript><p class="empty-n">Para ver y publicar valoraciones necesitas activar JavaScript en tu navegador.</p></noscript>' +
+    (full ? form : '<p class="val-all"><a class="btn btn-o" href="/opiniones/">Ver todas las opiniones</a></p>') + '</div>';
 }
 function faqList(items, limit) {
   items = limit ? items.slice(0, limit) : items;
@@ -331,7 +333,7 @@ const SECTION_HEAD = (eyebrow, title, right, tag) => '<div class="sh rv"><div><s
 const BTN_WA = (msg, txt, cls) => '<a class="btn btn-wa ' + (cls || '') + '" href="' + wa(msg) + '"' + waAttrs() + '>' + ic('wa', 20) + ' ' + (txt || 'Reservar por WhatsApp') + '</a>';
 
 /* ---------- plantilla de página ---------- */
-const NAV = [['rutas', 'Rutas'], ['actividades', 'Actividades'], ['servicios', 'Servicios'], ['nosotros', 'Nosotros'], ['galeria', 'Galería'], ['blog', 'Blog'], ['contacto', 'Contacto']];
+const NAV = [['rutas', 'Rutas'], ['actividades', 'Actividades'], ['servicios', 'Servicios'], ['nosotros', 'Nosotros'], ['galeria', 'Galería'], ['opiniones', 'Opiniones'], ['blog', 'Blog'], ['contacto', 'Contacto']];
 const NAV_FOOT = NAV.concat([['preguntas-frecuentes', 'Preguntas frecuentes']]);
 const SITEMAP = [];
 function logo() { return '<a class="logo" href="/" aria-label="' + esc(NAME) + ', inicio"><svg width="40" height="40" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="8" fill="#2C5A3C"/><circle cx="34" cy="14" r="5" fill="#D9A21B"/><path d="M4 40L17 18l7 11 6-8 14 19z" fill="#F1EBDA"/></svg><span class="lt"><b>Guadarramaa</b><em>.guidess</em></span></a>'; }
@@ -463,7 +465,7 @@ const heroSrc = has(PORT.imagen) ? PORT.imagen : phUrl('alba', 6);
 
     '<section class="sec"><div class="wrap">' + SECTION_HEAD('Galería', 'Imágenes de la sierra', '<a class="link" href="/galeria/">Ver galería completa</a>') + '<div class="gal" data-gal>' + galleryItems(6) + '</div></div></section>' +
 
-    '<section class="sec alt"><div class="wrap">' + SECTION_HEAD('Opiniones', 'Lo que cuentan quienes caminan con nosotros') + quoteCards() + '</div></section>' + '<section class="sec"><div class="wrap">' + quickMsgs() + '</div></section>' + communityBlock() +
+    '<section class="sec alt"><div class="wrap">' + SECTION_HEAD('Opiniones', 'Lo que cuentan quienes caminan con nosotros') + quoteCards(false) + '</div></section>' + '<section class="sec"><div class="wrap">' + quickMsgs() + '</div></section>' + communityBlock() +
 
     '<section class="sec"><div class="wrap split">' + '<div class="prose rv"><span class="eyebrow">Dónde estamos</span><h2>Mapa de la zona</h2><p>Nuestras rutas recorren la Sierra de Guadarrama, en la Comunidad de Madrid. Aquí puedes ver la zona.</p><ul class="zones">' + RUTAS.map(r => '<li><a href="' + rUrl(r) + '">' + esc(r.titulo) + '</a> <span>' + T(r.zona) + '</span></li>').join('') + '</ul></div><div class="rv">' + mapBlock() + '</div></div></section>' +
 
@@ -562,6 +564,15 @@ page('nosotros', {
     '<section class="sec alt"><div class="wrap">' + ((NOS.disciplinas || []).length ? '<ul class="tags rv" aria-label="Disciplinas que practica">' + NOS.disciplinas.map(d => '<li>' + esc(d) + '</li>').join('') + '</ul>' : '') + SECTION_HEAD('Valores', 'Qué nos mueve') + '<div class="vals">' + (NOS.valores || []).map(v => '<div class="val rv"><h3>' + T(v.titulo) + '</h3><p>' + T(v.texto) + '</p></div>').join('') + '</div></div></section>' +
     '<section class="sec"><div class="wrap">' + SECTION_HEAD('Equipo', 'Las personas detrás de las rutas') + '<div class="team">' + (NOS.equipo || []).map(m => '<article class="member rv">' + (has(m.foto) ? '<figure class="ph avatar-p"><img src="' + esc(m.foto) + '" alt="' + esc(stripProv(m.nombre)) + '" loading="lazy"></figure>' : '<div class="avatar">' + ic('user', 34) + '<span>Foto por añadir</span></div>') + '<h3>' + T(m.nombre) + '</h3><p class="role">' + T(m.cargo) + '</p><p>' + T(m.bio) + '</p></article>').join('') + '</div></div></section>' +
     '<section class="sec alt"><div class="wrap narrow">' + SECTION_HEAD('Trayectoria', 'Formación y trayectoria') + '<div class="prose rv">' + md(NOS.titulaciones || 'PROVISIONAL: Aquí se indicarán las titulaciones de los guías, el seguro y las acreditaciones de la empresa.', { shift: 2 }) + '</div></div></section>' + ctaBand()
+});
+
+/* ---- Opiniones ---- */
+page('opiniones', {
+  title: 'Opiniones de quienes caminan con nosotros | ' + NAME,
+  desc: 'Opiniones, puntuación media y valoraciones publicadas por quienes han hecho rutas guiadas con ' + NAME + ' en la Sierra de Guadarrama. Comparte la tuya.',
+  nav: 'opiniones',
+  body: phead('Opiniones', 'Opiniones de quienes caminan con nosotros', 'Lee lo que cuentan otras personas y, si has caminado con nosotros, deja tu valoración. No hace falta registrarse.') +
+    '<section class="sec"><div class="wrap val-page">' + quoteCards(true) + '</div></section>' + ctaBand()
 });
 
 /* ---- Galería ---- */
