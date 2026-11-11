@@ -341,7 +341,7 @@ const NAV = [['rutas', 'Rutas'], ['actividades', 'Actividades'], ['servicios', '
 const NAV_FOOT = NAV.concat([['preguntas-frecuentes', 'Preguntas frecuentes']]);
 const SITEMAP = [];
 
-function logo() { return '<a class="logo" href="/" aria-label="' + esc(NAME) + ', inicio"><img src="/img/uploads/logo-guadarrama.jpg" alt="" width="40" height="40" style="width:40px;height:40px;object-fit:cover;border-radius:8px"><span class="lt"><b>Guadarramaa</b><em>.guidess</em></span></a>'; }
+function logo() { return '<a class="logo" href="/" aria-label="' + esc(NAME) + ', inicio"><img src="/img/uploads/Logo%20Guadarramaa.Guidess.jpeg" alt="" width="40" height="40" style="width:40px;height:40px;object-fit:cover;border-radius:8px"><span class="lt"><b>Guadarramaa</b><em>.guidess</em></span></a>'; }
 
 function missingList() {
   const m = [];
