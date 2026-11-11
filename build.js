@@ -340,7 +340,9 @@ const BTN_WA = (msg, txt, cls) => '<a class="btn btn-wa ' + (cls || '') + '" hre
 const NAV = [['rutas', 'Rutas'], ['actividades', 'Actividades'], ['servicios', 'Servicios'], ['nosotros', 'Nosotros'], ['galeria', 'Galería'], ['opiniones', 'Opiniones'], ['blog', 'Blog'], ['contacto', 'Contacto']];
 const NAV_FOOT = NAV.concat([['preguntas-frecuentes', 'Preguntas frecuentes']]);
 const SITEMAP = [];
-function logo() { return '<a class="logo" href="/" aria-label="' + esc(NAME) + ', inicio"><svg width="40" height="40" viewBox="0 0 48 48" aria-hidden="true"><rect width="48" height="48" rx="8" fill="#2C5A3C"/><circle cx="34" cy="14" r="5" fill="#D9A21B"/><path d="M4 40L17 18l7 11 6-8 14 19z" fill="#F1EBDA"/></svg><span class="lt"><b>Guadarramaa</b><em>.guidess</em></span></a>'; }
+
+function logo() { return '<a class="logo" href="/" aria-label="' + esc(NAME) + ', inicio"><img src="/img/uploads/logo-guadarrama.jpg" alt="" width="40" height="40" style="width:40px;height:40px;object-fit:cover;border-radius:8px"><span class="lt"><b>Guadarramaa</b><em>.guidess</em></span></a>'; }
+
 function missingList() {
   const m = [];
   if (!waNum) m.push('WhatsApp'); if (!EMAIL) m.push('correo'); if (INSTA && !String(AJ.instagram_url || '').trim()) m.push('confirmar enlace de Instagram'); if (!COMM) m.push('enlace de la comunidad de WhatsApp'); if (!BASE) m.push('dirección web');
