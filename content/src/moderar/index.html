@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Moderar valoraciones · Guadarramaa.guidess</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    body { padding: 24px 16px 60px }
+    .mod { max-width: 820px; margin: 0 auto; display: grid; gap: 18px }
+    .mod h1 { margin: 0; font-size: clamp(1.6rem, 5vw, 2.2rem) }
+    .row { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 8px }
+    .row.hid { opacity: .75; border-style: dashed }
+    .row p { margin: 0; white-space: pre-line; overflow-wrap: anywhere }
+    .meta { font-size: .9rem; color: var(--ink-soft) }
+    .acts { display: flex; flex-wrap: wrap; gap: 10px }
+    .tag { display: inline-block; font: 600 .8rem var(--f-label); letter-spacing: .1em; text-transform: uppercase; background: var(--prov-bg); color: var(--ink); padding: 2px 8px; border-radius: 3px }
+    .bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; justify-content: space-between }
+    .login { max-width: 420px }
+  </style>
+</head>
+<body>
+  <div class="mod">
+    <h1>Moderar valoraciones</h1>
+    <p class="meta">Zona privada. Aquí puedes ocultar, volver a mostrar o eliminar valoraciones. Los cambios se ven en la web en unos segundos.</p>
+
+    <form id="login" class="login" novalidate>
+      <label for="pw">Contraseña de administrador<input id="pw" type="password" autocomplete="current-password" required></label>
+      <p class="form-err" id="lerr" role="alert" hidden></p>
+      <div><button class="btn btn-a" type="submit">Entrar</button></div>
+    </form>
+
+    <div id="panel" hidden>
+      <div class="bar"><p class="meta" id="res"></p><div class="acts"><button class="btn btn-o btn-s" id="refresh" type="button">Actualizar</button><button class="btn btn-o btn-s" id="salir" type="button">Salir</button></div></div>
+      <p class="form-err" id="perr" role="alert" hidden></p>
+      <div id="lista" style="display:grid;gap:14px;margin-top:14px"></div>
+    </div>
+  </div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var pw = '';
+  try { pw = sessionStorage.getItem('gg-mod') || ''; } catch (e) { }
+  var API = '/api/valoraciones-admin';
+  var fecha = function (iso) { try { return new Date(iso).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' }); } catch (e) { return iso; } };
+
+  function llamar(opts) {
+    return fetch(API, Object.assign({ headers: { Authorization: 'Bearer ' + pw, 'Content-Type': 'application/json' } }, opts))
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, status: r.status, d: d }; }); });
+  }
+  function pintar(d) {
+    $('#res').textContent = d.total + ' publicadas · media ' + String(d.media).replace('.', ',') + ' de 5 · ' + (d.items.length - d.total) + ' ocultas';
+    var l = $('#lista'); l.innerHTML = '';
+    if (!d.items.length) { var p = document.createElement('p'); p.className = 'empty-n'; p.textContent = 'Todavía no hay valoraciones.'; l.appendChild(p); return; }
+    d.items.forEach(function (it) {
+      var r = document.createElement('article'); r.className = 'row' + (it.oculta ? ' hid' : '');
+      var h = document.createElement('div'); var n = document.createElement('strong'); n.textContent = it.nombre + ' · ' + '★'.repeat(it.estrellas) + '☆'.repeat(5 - it.estrellas); h.appendChild(n);
+      if (it.oculta) { var t = document.createElement('span'); t.className = 'tag'; t.textContent = 'Oculta'; t.style.marginLeft = '8px'; h.appendChild(t); }
+      var c = document.createElement('p'); c.textContent = it.comentario;
+      var m = document.createElement('span'); m.className = 'meta'; m.textContent = fecha(it.fecha);
+      var a = document.createElement('div'); a.className = 'acts';
+      var b1 = document.createElement('button'); b1.type = 'button'; b1.className = 'btn btn-o btn-s'; b1.textContent = it.oculta ? 'Volver a mostrar' : 'Ocultar';
+      b1.onclick = function () { accion(it.id, it.oculta ? 'mostrar' : 'ocultar', b1); };
+      var b2 = document.createElement('button'); b2.type = 'button'; b2.className = 'btn btn-o btn-s'; b2.textContent = 'Eliminar para siempre';
+      b2.onclick = function () { if (confirm('¿Eliminar esta valoración para siempre? No se puede deshacer.\n\n' + it.nombre + ': ' + it.comentario.slice(0, 120))) accion(it.id, 'eliminar', b2); };
+      a.appendChild(b1); a.appendChild(b2);
+      r.appendChild(h); r.appendChild(c); r.appendChild(m); r.appendChild(a); l.appendChild(r);
+    });
+  }
+  function cargar() {
+    return llamar({ method: 'GET' }).then(function (x) {
+      if (!x.ok) { entrar(false); $('#lerr').textContent = x.d.mensaje || 'No se pudo entrar.'; $('#lerr').hidden = false; if (x.status === 401) { pw = ''; try { sessionStorage.removeItem('gg-mod'); } catch (e) { } } return; }
+      entrar(true); $('#perr').hidden = true; pintar(x.d);
+    }).catch(function () { $('#lerr').textContent = 'Error de conexión.'; $('#lerr').hidden = false; });
+  }
+  function accion(id, acc, btn) {
+    btn.disabled = true;
+    llamar({ method: 'POST', body: JSON.stringify({ id: id, accion: acc }) }).then(function (x) {
+      if (!x.ok) { $('#perr').textContent = x.d.mensaje || 'No se pudo completar la acción.'; $('#perr').hidden = false; btn.disabled = false; return; }
+      cargar();
+    }).catch(function () { $('#perr').textContent = 'Error de conexión.'; $('#perr').hidden = false; btn.disabled = false; });
+  }
+  function entrar(si) { $('#login').hidden = si; $('#panel').hidden = !si; }
+  $('#login').addEventListener('submit', function (e) {
+    e.preventDefault(); pw = $('#pw').value; $('#lerr').hidden = true;
+    if (!pw) { $('#lerr').textContent = 'Escribe la contraseña.'; $('#lerr').hidden = false; return; }
+    try { sessionStorage.setItem('gg-mod', pw); } catch (er) { }
+    $('#pw').value = ''; cargar();
+  });
+  $('#refresh').onclick = cargar;
+  $('#salir').onclick = function () { pw = ''; try { sessionStorage.removeItem('gg-mod'); } catch (e) { } $('#lista').innerHTML = ''; entrar(false); };
+  if (pw) cargar();
+})();
+</script>
+</body>
+</html>
