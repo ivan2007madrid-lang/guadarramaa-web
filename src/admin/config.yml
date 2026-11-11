@@ -53,6 +53,7 @@ collections:
       - { label: "Longitud del punto de encuentro (opcional)", name: lng, widget: string, required: false, hint: "Ejemplo con punto decimal: -4.1477" }
       - { label: "Material recomendado (un elemento por línea)", name: material, widget: text, required: false }
       - { label: "Qué incluye", name: incluye, widget: markdown, required: false, buttons: [bold, italic, bulleted-list] }
+      - { label: "Mapa de Wikiloc (opcional)", name: wikiloc, widget: string, required: false, hint: "Pega el número de la ruta de Wikiloc (ejemplo: 295268539) o su enlace. Si lo dejas vacío, esta ruta no muestra mapa de Wikiloc." }
       - { label: "Perfil de altitud (opcional)", name: perfil, widget: string, required: false, hint: "Pares km:altitud separados por comas. Ejemplo: 0:900, 3:1050, 6:1200" }
       - { label: "Precio", name: precio, widget: string, required: false, hint: "Escribe el precio real con el texto que quieras mostrar" }
       - { label: "Semilla de la ilustración provisional", name: semilla, widget: hidden, required: false }

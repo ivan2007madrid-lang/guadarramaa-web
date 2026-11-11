@@ -405,6 +405,23 @@ function ctaBand(titulo, texto) {
   return '<section class="band cta"><div class="wrap cta-in"><div><span class="eyebrow">Contacto y reservas</span><h2>' + (titulo || '¿Hablamos de tu próxima ruta?') + '</h2><p>' + (texto || 'Reserva plaza o cuéntanos tus dudas. Respondemos a cada consulta.') + '</p></div><div class="cta-row">' + BTN_WA(MSG_GEN, 'Reservar por WhatsApp') + '<a class="btn btn-g" href="/contacto/">Escribir un mensaje</a></div></div></section>';
 }
 
+/* ---------- mapa de Wikiloc (opcional por ruta: campo «wikiloc» en el panel) ---------- */
+function wikilocId(r) {
+  const v = String(r.wikiloc == null ? '' : r.wikiloc).trim();
+  if (!v) return '';
+  if (/^\d{4,12}$/.test(v)) return v;
+  const m = v.match(/[?&]id=(\d{4,12})/) || v.match(/-(\d{4,12})(?:[/?#]|$)/);   // admite la URL completa o el código iframe
+  return m ? m[1] : '';
+}
+function wikilocBlock(r) {
+  const id = wikilocId(r);
+  if (!id) return '';
+  const view = 'https://es.wikiloc.com/wikiloc/view.do?id=' + id;
+  return '<div class="block rv"><h2>Mapa de la ruta en Wikiloc</h2>' +
+    '<div class="wl" data-wl="' + id + '" data-title="' + esc(r.titulo) + '"><div class="map-ph"><span class="eyebrow">Mapa con perfil de elevación y fotos</span><p>El mapa se carga desde Wikiloc. Al pulsar el botón, tu navegador contacta con ese servicio.</p><button class="btn btn-a" type="button" data-wl-load>' + ic('pin', 18) + ' Cargar mapa de Wikiloc</button></div></div>' +
+    '<p class="wl-cta"><a class="btn btn-o" href="' + view + '" target="_blank" rel="noopener">Ver y seguir ruta en Wikiloc</a></p></div>';
+}
+
 /* ---------- perfil de altitud ---------- */
 function perfilSVG(r) {
   const pts = String(r.perfil || '').split(/[;,]\s*/).map(s => s.split(':').map(Number)).filter(a => a.length === 2 && a.every(n => !isNaN(n)));
@@ -498,6 +515,7 @@ RUTAS.forEach(r => {
     (has(r.incluye) ? '<div class="block rv"><h2>Qué incluye</h2><div class="prose">' + md(r.incluye, { shift: 2 }) + '</div></div>' : '') +
     '<div class="block rv"><h2>Material recomendado</h2>' + (has(r.material) ? '<ul class="mat">' + String(r.material).split(/\r?\n/).filter(x => x.trim()).map(m => '<li>' + T(m.replace(/^[-*]\s*/, '')) + '</li>').join('') + '</ul>' : '<p><mark class="prov">Lista de material recomendado por confirmar.</mark></p>') + '</div>' +
     (perfilSVG(r) ? '<div class="block rv"><h2>Perfil de la ruta</h2>' + perfilSVG(r) + '</div>' : '') +
+    wikilocBlock(r) +
     '<div class="block rv"><h2>Fotografías</h2><div class="thumbs" data-gal>' + thumbs + '</div></div>' +
     '<div class="block rv"><h2>Dónde empieza</h2>' + mapBlock(bbox, mapMark, mapMark ? 'Punto de encuentro' : 'Zona de la ruta') + (!mapMark && AVISOS ? '<p class="notebox">Para marcar el punto de encuentro en el mapa, añade sus coordenadas en la ficha de la ruta desde el panel.</p>' : '') + '</div>' +
     '</div><aside class="book rv" id="reservar" aria-label="Reservas"><div><span class="zona">Precio</span><div class="price-l">' + P(r.precio) + '</div></div>' +

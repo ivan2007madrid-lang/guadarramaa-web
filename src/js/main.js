@@ -101,6 +101,19 @@
     });
   });
 
+  /* Mapa de Wikiloc: se carga solo al pulsar (privacidad y velocidad) */
+  $$('.wl').forEach(function (w) {
+    var b = $('[data-wl-load]', w); if (!b) return;
+    b.addEventListener('click', function () {
+      var id = (w.getAttribute('data-wl') || '').replace(/\D/g, ''); if (!id) return;
+      var f = document.createElement('iframe');
+      f.src = 'https://es.wikiloc.com/wikiloc/embedv2.do?id=' + id + '&elevation=on&images=on&maptype=H';
+      f.title = 'Mapa de la ruta en Wikiloc: ' + (w.getAttribute('data-title') || '');
+      f.setAttribute('frameborder', '0'); f.setAttribute('scrolling', 'no'); f.loading = 'lazy'; f.allowFullscreen = true;
+      w.innerHTML = ''; w.appendChild(f);
+    });
+  });
+
   /* Calendario */
   var cal = $('#cal'), dataEl = $('#salidas-data');
   if (cal && dataEl) {
