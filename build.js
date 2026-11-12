@@ -380,9 +380,9 @@ const SECTION_HEAD = (eyebrow, title, right, tag) => '<div class="sh rv"><div><s
 const BTN_WA = (msg, txt, cls) => '<a class="btn btn-wa ' + (cls || '') + '" href="' + wa(msg) + '"' + waAttrs() + '>' + ic('wa', 20) + ' ' + (txt || 'Reservar por WhatsApp') + '</a>';
 
 /* ---------- plantilla de página ---------- */
-const NAV = [['rutas', 'Rutas'], ['atlas', 'Atlas'], ['actividades', 'Actividades'], ['servicios', 'Servicios'], ['nosotros', 'Nosotros'], ['galeria', 'Galería'], ['opiniones', 'Opiniones'], ['blog', 'Blog'], ['contacto', 'Contacto']];
+const NAV = [['inicio', 'Inicio'], ['rutas', 'Rutas'], ['servicios', 'Servicios'], ['actividades', 'Actividades'], ['atlas', 'Atlas'], ['nosotros', 'Nosotros'], ['blog', 'Blog'], ['galeria', 'Galería'], ['opiniones', 'Opiniones'], ['contacto', 'Contacto']];
+const navUrl = id => id === 'inicio' ? '/' : '/' + id + '/';
 const NAV_FOOT = NAV.concat([['preguntas-frecuentes', 'Preguntas frecuentes']]);
-const SITEMAP = [];
 
 function logo() { return '<a class="logo" href="/" aria-label="' + esc(NAME) + ', inicio"><img src="/img/uploads/Logo%20Guadarramaa.Guidess.jpeg" alt="" width="40" height="40" style="width:40px;height:40px;object-fit:cover;border-radius:8px"><span class="lt"><b>Guadarramaa</b><em>.guidess</em></span></a>'; }
 
@@ -392,10 +392,10 @@ function missingList() {
   return m;
 }
 function header(cur) {
-  const isCur = id => cur === id ? ' aria-current="page"' : '';
+  const isCur = id => (id === 'inicio' ? !cur : cur === id) ? ' aria-current="page"' : '';
   const subs = RUTAS.map(r => '<a href="' + rUrl(r) + '">' + esc(r.titulo) + '</a>').join('') + '<a href="/rutas/" class="all">Ver todas las rutas</a>';
-  const links = NAV.map(([id, t]) => id === 'rutas' ? '<div class="has-sub"><a href="/rutas/"' + isCur(id) + '>' + t + '</a><div class="sub">' + subs + '</div></div>' : '<a href="/' + id + '/"' + isCur(id) + '>' + t + '</a>').join('');
-  const mlinks = NAV.map(([id, t]) => '<a href="/' + id + '/"' + isCur(id) + '>' + t + '</a>' + (id === 'rutas' ? RUTAS.map(r => '<a class="sub-l" href="' + rUrl(r) + '">' + esc(r.titulo) + '</a>').join('') : '')).join('');
+  const links = NAV.map(([id, t]) => id === 'rutas' ? '<div class="has-sub"><a href="/rutas/"' + isCur(id) + '>' + t + '</a><div class="sub">' + subs + '</div></div>' : '<a href="' + navUrl(id) + '"' + isCur(id) + '>' + t + '</a>').join('');
+  const mlinks = NAV.map(([id, t]) => '<a href="' + navUrl(id) + '"' + isCur(id) + '>' + t + '</a>' + (id === 'rutas' ? RUTAS.map(r => '<a class="sub-l" href="' + rUrl(r) + '">' + esc(r.titulo) + '</a>').join('') : '')).join('');
   return '<a class="skip" href="#contenido">Saltar al contenido</a>' +
     '<header class="site-head" id="top"><div class="wrap bar">' + logo() + '<nav class="nav" aria-label="Principal">' + links + '<a class="btn btn-wa btn-s" href="' + wa() + '"' + waAttrs() + '>' + ic('wa', 18) + ' Reservar</a></nav>' +
     '<button class="burger" type="button" aria-expanded="false" aria-controls="menu" aria-label="Abrir menú">' + ic('menu', 26) + '</button></div>' +
@@ -403,7 +403,7 @@ function header(cur) {
 }
 function footer() {
   return '<footer class="foot band"><div class="wrap"><div class="foot-g"><div>' + logo() + '<p>Rutas guiadas por la Sierra de Guadarrama, en la Comunidad de Madrid.</p></div>' +
-    '<div><h2>Explora</h2>' + NAV_FOOT.map(([id, t]) => '<a href="/' + id + '/">' + t + '</a>').join('') + '</div>' +
+    '<div><h2>Explora</h2>' + NAV_FOOT.map(([id, t]) => '<a href="' + navUrl(id) + '">' + t + '</a>').join('') + '</div>' +
     '<div><h2>Rutas</h2>' + RUTAS.map(r => '<a href="' + rUrl(r) + '">' + esc(r.titulo) + '</a>').join('') + '</div>' +
     '<div><h2>Contacto</h2>' +
     '<p>' + (EMAIL ? '<a href="mailto:' + esc(EMAIL) + '">' + esc(EMAIL) + '</a>' : '<mark class="prov">Correo por confirmar</mark>') + '</p>' +
