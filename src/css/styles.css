@@ -69,7 +69,7 @@ main:focus { outline: none }
 .menu a:not(.btn) { display: block; padding: 11px 0; color: var(--on-bar); text-decoration: none; font: 600 1.1rem var(--f-label); letter-spacing: .12em; text-transform: uppercase; border-bottom: 1px solid var(--bar-line) }
 .menu a.sub-l { padding-left: 18px; font-weight: 500; color: var(--on-bar-soft); letter-spacing: .06em; text-transform: none; font-size: 1.05rem }
 .menu .btn { margin-top: 16px; width: 100%; justify-content: center }
-@media (min-width: 1240px) {
+@media (min-width: 1460px) {
   .burger, .menu { display: none !important }
   .nav { display: flex; align-items: center; gap: 18px }
   .nav > a:not(.btn), .has-sub > a { color: var(--on-bar); text-decoration: none; font: 600 .98rem var(--f-label); letter-spacing: .13em; text-transform: uppercase; padding-block: 8px; border-bottom: 2px solid transparent; transition: border-color .2s }
@@ -237,6 +237,11 @@ main:focus { outline: none }
 .val-sum { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 0 0 clamp(16px, 2.4vw, 26px); font: 400 1.05rem var(--f-body); color: var(--ink-soft) }
 .val-sum b { font: 400 1.9rem/1 var(--f-display); color: var(--ink) }
 .val-more { margin-top: 20px; text-align: center }
+.op-hero-w { margin-top: clamp(-40px, -3vw, -20px); position: relative; z-index: 1 }
+.op-hero { margin: 0; border-radius: 6px; overflow: hidden; border: 1px solid var(--line); background: var(--bar); box-shadow: 0 10px 30px rgba(13, 26, 18, .18) }
+.op-hero img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 50% }
+@media (min-width: 700px) { .op-hero img { aspect-ratio: 1600 / 720 } }
+.val-all { margin: 22px 0 0; text-align: center }
 .val-note { margin: 16px 0 0; font-size: .9rem; color: var(--ink-soft); font-style: italic }
 .val-err { color: #B3261E; font-size: .95rem }
 @media (prefers-color-scheme: dark) { .val-err { color: #F2A29B } }

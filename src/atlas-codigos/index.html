@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Códigos del pasaporte · Guadarramaa.guidess</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <style>
+    body { padding: 24px 16px 60px }
+    .mod { max-width: 860px; margin: 0 auto; display: grid; gap: 18px }
+    .mod h1 { margin: 0; font-size: clamp(1.6rem, 5vw, 2.2rem) }
+    .box { background: var(--card); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 12px }
+    .g2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px }
+    .meta { font-size: .9rem; color: var(--ink-soft); margin: 0 }
+    .acts { display: flex; flex-wrap: wrap; gap: 10px; align-items: center }
+    .new { font: 700 1.25rem/1.6 monospace; letter-spacing: .06em; white-space: pre-line; background: var(--bg); border: 2px dashed var(--accent); border-radius: 6px; padding: 12px 16px; user-select: all }
+    table { width: 100%; border-collapse: collapse; font-size: .92rem }
+    th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); vertical-align: top }
+    td.c { font-family: monospace; font-weight: 700; white-space: nowrap }
+    tr.rev td { opacity: .55 }
+    .tbl { overflow-x: auto }
+    .login { max-width: 420px }
+  </style>
+</head>
+<body>
+<div class="mod">
+  <h1>Códigos del pasaporte</h1>
+  <p class="meta">Zona privada. Genera los códigos que entregas personalmente tras cada salida. Cada código vale para un solo sello.</p>
+
+  <form id="login" class="login" novalidate>
+    <label for="pw">Contraseña de administrador<input id="pw" type="password" autocomplete="current-password" required></label>
+    <p class="form-err" id="lerr" role="alert" hidden></p>
+    <div><button class="btn btn-a" type="submit">Entrar</button></div>
+  </form>
+
+  <div id="panel" hidden style="display:grid;gap:18px">
+    <form id="gen" class="box" novalidate>
+      <h2 style="margin:0">Crear códigos</h2>
+      <div class="g2">
+        <label>Ruta<select id="ruta"></select></label>
+        <label>Fecha de la salida<input id="fecha" type="date" required></label>
+        <label>Cuántos códigos<input id="cant" type="number" min="1" max="30" value="6" required></label>
+      </div>
+      <div class="g2">
+        <label>Kilómetros<input id="km" type="number" step="0.1" min="0" required></label>
+        <label>Desnivel positivo (m)<input id="des" type="number" step="1" min="0" required></label>
+        <label>Nota interna (opcional)<input id="nota" type="text" maxlength="80" placeholder="Ej.: grupo de mayo"></label>
+      </div>
+      <p class="meta">Los kilómetros y el desnivel se rellenan con los datos de la ruta; puedes corregirlos si ese día fue distinto.</p>
+      <p class="form-err" id="gerr" role="alert" hidden></p>
+      <div class="acts"><button class="btn btn-a" type="submit">Crear códigos</button></div>
+      <div id="nuevos" hidden>
+        <p class="meta">Códigos nuevos (cópialos ahora o consúltalos luego en la lista):</p>
+        <div class="new" id="nuevosTxt"></div>
+        <div class="acts" style="margin-top:8px"><button class="btn btn-o btn-s" type="button" id="copiar">Copiar todos</button><span class="meta" id="copiado"></span></div>
+      </div>
+    </form>
+
+    <div class="box">
+      <div class="acts" style="justify-content:space-between"><h2 style="margin:0">Códigos creados</h2><span class="acts"><button class="btn btn-o btn-s" id="refresh" type="button">Actualizar</button><button class="btn btn-o btn-s" id="salir" type="button">Salir</button></span></div>
+      <p class="form-err" id="perr" role="alert" hidden></p>
+      <p class="meta" id="res"></p>
+      <div class="tbl"><table><thead><tr><th>Código</th><th>Ruta</th><th>Fecha</th><th>Estado</th><th></th></tr></thead><tbody id="lista"></tbody></table></div>
+    </div>
+  </div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (s) { return document.querySelector(s); };
+  var pw = ''; try { pw = sessionStorage.getItem('gg-atlas-adm') || ''; } catch (e) { }
+  var API = '/api/pasaporte-admin', rutas = [];
+  function llamar(opts) {
+    return fetch(API, Object.assign({ headers: { Authorization: 'Bearer ' + pw, 'Content-Type': 'application/json' } }, opts))
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { return { ok: r.ok, status: r.status, d: d }; }); });
+  }
+  var fec = function (f) { var m = String(f || '').match(/^(\d{4})-(\d{2})-(\d{2})/); return m ? m[3] + '/' + m[2] + '/' + m[1] : ''; };
+  function entrar(si) { $('#login').hidden = si; $('#panel').hidden = !si; }
+  function cargarRutas() {
+    return fetch('/data/atlas.json').then(function (r) { return r.json(); }).then(function (d) {
+      rutas = d.rutas || []; var s = $('#ruta'); s.innerHTML = '';
+      rutas.forEach(function (r) { var o = document.createElement('option'); o.value = r.id; o.textContent = r.titulo; s.appendChild(o); });
+      rellena();
+    }).catch(function () { });
+  }
+  function rellena() {
+    var r = rutas.filter(function (x) { return x.id === $('#ruta').value; })[0]; if (!r) return;
+    var km = r.track ? r.track.km : r.km, up = r.track && r.track.up !== null ? r.track.up : r.desnivel;
+    $('#km').value = km !== null && km !== undefined ? Math.round(km * 10) / 10 : ''; $('#des').value = up !== null && up !== undefined ? Math.round(up) : '';
+  }
+  $('#ruta').addEventListener('change', rellena);
+  function pintar(items) {
+    var l = $('#lista'); l.innerHTML = '';
+    var libres = items.filter(function (i) { return !i.canjeado && !i.revocado; }).length;
+    $('#res').textContent = items.length + ' códigos · ' + libres + ' sin usar · ' + items.filter(function (i) { return i.canjeado; }).length + ' canjeados';
+    items.forEach(function (it) {
+      var tr = document.createElement('tr'); if (it.revocado) tr.className = 'rev';
+      var c = function (t, cl) { var td = document.createElement('td'); if (cl) td.className = cl; td.textContent = t; tr.appendChild(td); return td; };
+      c(it.codigo, 'c'); c(it.titulo + (it.nota ? ' · ' + it.nota : '')); c(fec(it.fecha));
+      c(it.revocado ? 'Anulado' : it.canjeado ? 'Canjeado' : 'Sin usar');
+      var td = document.createElement('td'), a = document.createElement('div'); a.className = 'acts';
+      var b = function (t, acc, conf) { var x = document.createElement('button'); x.type = 'button'; x.className = 'btn btn-o btn-s'; x.textContent = t; x.onclick = function () { if (conf && !confirm(conf)) return; accion(it.codigo, acc, x); }; a.appendChild(x); };
+      if (it.revocado) b('Restaurar', 'restaurar'); else b('Anular', 'revocar');
+      b('Eliminar', 'eliminar', '¿Eliminar el código ' + it.codigo + ' para siempre?');
+      td.appendChild(a); tr.appendChild(td); l.appendChild(tr);
+    });
+  }
+  function cargar() {
+    return llamar({ method: 'GET' }).then(function (x) {
+      if (!x.ok) { entrar(false); $('#lerr').textContent = x.d.mensaje || 'No se pudo entrar.'; $('#lerr').hidden = false; if (x.status === 401) { pw = ''; try { sessionStorage.removeItem('gg-atlas-adm'); } catch (e) { } } return; }
+      entrar(true); $('#perr').hidden = true; pintar(x.d.items || []);
+    }).catch(function () { $('#lerr').textContent = 'Error de conexión.'; $('#lerr').hidden = false; });
+  }
+  function accion(codigo, acc, btn) {
+    btn.disabled = true;
+    llamar({ method: 'POST', body: JSON.stringify({ accion: acc, codigo: codigo }) }).then(function (x) {
+      if (!x.ok) { $('#perr').textContent = x.d.mensaje || 'No se pudo completar la acción.'; $('#perr').hidden = false; btn.disabled = false; return; }
+      cargar();
+    }).catch(function () { $('#perr').textContent = 'Error de conexión.'; $('#perr').hidden = false; btn.disabled = false; });
+  }
+  $('#login').addEventListener('submit', function (e) {
+    e.preventDefault(); pw = $('#pw').value; $('#lerr').hidden = true;
+    if (!pw) { $('#lerr').textContent = 'Escribe la contraseña.'; $('#lerr').hidden = false; return; }
+    try { sessionStorage.setItem('gg-atlas-adm', pw); } catch (er) { } $('#pw').value = ''; cargar();
+  });
+  $('#gen').addEventListener('submit', function (e) {
+    e.preventDefault(); var r = rutas.filter(function (x) { return x.id === $('#ruta').value; })[0]; $('#gerr').hidden = true;
+    if (!r) { $('#gerr').textContent = 'Elige una ruta.'; $('#gerr').hidden = false; return; }
+    llamar({ method: 'POST', body: JSON.stringify({ accion: 'generar', ruta: r.id, titulo: r.titulo, fecha: $('#fecha').value, km: $('#km').value, desnivel: $('#des').value, cantidad: $('#cant').value, nota: $('#nota').value }) }).then(function (x) {
+      if (!x.ok) { $('#gerr').textContent = x.d.mensaje || 'No se pudieron crear los códigos.'; $('#gerr').hidden = false; return; }
+      $('#nuevosTxt').textContent = x.d.codigos.join('\n'); $('#nuevos').hidden = false; $('#copiado').textContent = ''; cargar();
+    }).catch(function () { $('#gerr').textContent = 'Error de conexión.'; $('#gerr').hidden = false; });
+  });
+  $('#copiar').onclick = function () { var t = $('#nuevosTxt').textContent; (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $('#copiado').textContent = 'Copiado'; }).catch(function () { $('#copiado').textContent = 'Selecciona el texto y cópialo a mano.'; }); };
+  $('#refresh').onclick = cargar;
+  $('#salir').onclick = function () { pw = ''; try { sessionStorage.removeItem('gg-atlas-adm'); } catch (e) { } $('#lista').innerHTML = ''; $('#nuevos').hidden = true; entrar(false); };
+  cargarRutas(); if (pw) cargar();
+})();
+</script>
+</body>
+</html>

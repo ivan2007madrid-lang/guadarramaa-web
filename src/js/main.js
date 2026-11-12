@@ -171,7 +171,7 @@
   var vroot = $('[data-valoraciones]');
   if (vroot) {
     var vlist = $('[data-val-list]', vroot), vsum = $('[data-val-sum]', vroot), vempty = $('[data-val-empty]', vroot), vmore = $('[data-val-more]', vroot), vload = $('[data-val-loaderr]', vroot);
-    var vform = $('#val-form'), vstart = Date.now(), vitems = [], vshown = 0, VPASO = 6;
+    var vlim = +vroot.getAttribute('data-limit') || 0, vform = $('#val-form'), vstart = Date.now(), vitems = [], vshown = 0, VPASO = 6;
     var STAR = vroot.getAttribute('data-star') || '';
     var mkStars = function (n, off) { var h = ''; for (var i = 1; i <= 5; i++) h += '<span' + (i > n ? ' class="off-s" style="opacity:.28"' : '') + '>' + STAR + '</span>'; return h; };
     var fmtMedia = function (m) { return String(m).replace('.', ','); };
@@ -193,17 +193,18 @@
       f.appendChild(s); f.appendChild(q); f.appendChild(c); return f;
     };
     var drawList = function () {
-      var end = Math.min(vitems.length, vshown);
+      var end = Math.min(vitems.length, vlim || vshown);
       vlist.innerHTML = ''; vitems.slice(0, end).forEach(function (it) { vlist.appendChild(card(it)); });
-      vempty.hidden = vitems.length > 0; vmore.hidden = end >= vitems.length;
+      vempty.hidden = vitems.length > 0; if (vmore) vmore.hidden = !!vlim || end >= vitems.length;
     };
-    var apply = function (d) { vitems = d.items || []; vshown = Math.max(vshown, VPASO); drawSum(d.total, d.media); drawList(); };
+    var apply = function (d) { vitems = d.items || []; vshown = vlim || Math.max(vshown, VPASO); drawSum(d.total, d.media); drawList(); };
     fetch('/api/valoraciones', { headers: { Accept: 'application/json' } })
       .then(function (r) { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(function (d) { vload.hidden = true; apply(d); })
       .catch(function () { vload.hidden = false; });
-    $('button', vmore).addEventListener('click', function () { vshown += VPASO; drawList(); });
+    if (vmore) $('button', vmore).addEventListener('click', function () { vshown += VPASO; drawList(); });
 
+    if (vform) {
     /* Estrellas interactivas */
     var rows = $$('.star-in label', vform), radios = $$('.star-in input', vform);
     var paint = function (n) { rows.forEach(function (l, i) { l.classList.toggle('on', i < n); }); };
@@ -241,5 +242,6 @@
         })
         .catch(function () { fail.textContent = 'No se ha podido publicar. Revisa tu conexión e inténtalo de nuevo.'; fail.hidden = false; reset(); });
     });
+    }
   }
 })();

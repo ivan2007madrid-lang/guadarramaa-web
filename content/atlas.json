@@ -1,0 +1,71 @@
+{
+  "titulo": "Atlas Guadarrama",
+  "titulo_portada": "La Sierra de Guadarrama, en 3D",
+  "intro_texto": "Recorre nuestras rutas sobre el relieve real, consulta las condiciones de la montaña con datos oficiales y colecciona sellos en tu pasaporte montañero.",
+  "tiempo": {
+    "avisos_area": "72",
+    "avisos_texto": [
+      "Guadarrama"
+    ],
+    "umbrales": {
+      "racha_ambar": 50,
+      "racha_rojo": 70,
+      "viento_ambar": 35,
+      "viento_rojo": 55,
+      "lluvia_ambar": 60,
+      "lluvia_rojo": 90,
+      "prec_ambar": 1,
+      "prec_rojo": 5,
+      "tmax_ambar": 32,
+      "tmin_ambar": -3,
+      "nieve_suelo_ambar": 1
+    },
+    "zonas": [
+      {
+        "id": "fuenfria",
+        "nombre": "Cercedilla · Valle de la Fuenfría",
+        "municipio": "Cercedilla",
+        "estacion": "2462",
+        "estacion_nombre": "Puerto de Navacerrada",
+        "rutas": [
+          "fuenfria"
+        ]
+      },
+      {
+        "id": "escorial",
+        "nombre": "San Lorenzo de El Escorial",
+        "municipio": "San Lorenzo de El Escorial",
+        "alias_municipio": [
+          "El Escorial",
+          "Escorial, El"
+        ],
+        "estacion": "",
+        "estacion_nombre": "",
+        "rutas": [
+          "escorial",
+          "escorial-35km"
+        ]
+      }
+    ]
+  },
+  "rutas_extra": [
+    {
+      "id": "escorial-35km",
+      "titulo": "Ruta de 35 km por El Escorial",
+      "blog": "ruta-35-km-por-escorial",
+      "km": 35,
+      "desnivel": 1342,
+      "dificultad": "Alta",
+      "duracion": "8 h 15 min",
+      "tipos": [
+        "Cumbres y vistas",
+        "Reto físico",
+        "Historia y patrimonio"
+      ],
+      "resumen": "Ruta circular larga y exigente desde San Lorenzo de El Escorial: Silla de Felipe II, Collado de Entrecabezas y Abantos. Solo para personas con muy buena preparación.",
+      "gpx": "/img/uploads/escorial-35km.gpx",
+      "imagen": "/img/uploads/170617114master.jpg"
+    }
+  ],
+  "lugares": []
+}

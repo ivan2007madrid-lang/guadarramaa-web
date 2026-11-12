@@ -24,5 +24,11 @@
   "publicada": true,
   "titulo": "Ruta de El Escorial",
   "destacada": true,
-  "lat": "40.585279"
+  "lat": "40.585279",
+  "tipos": [
+    "Historia y patrimonio",
+    "Cumbres y vistas",
+    "Naturaleza y bosque"
+  ],
+  "gpx": "/img/uploads/escorial.gpx"
 }

@@ -380,7 +380,7 @@ const SECTION_HEAD = (eyebrow, title, right, tag) => '<div class="sh rv"><div><s
 const BTN_WA = (msg, txt, cls) => '<a class="btn btn-wa ' + (cls || '') + '" href="' + wa(msg) + '"' + waAttrs() + '>' + ic('wa', 20) + ' ' + (txt || 'Reservar por WhatsApp') + '</a>';
 
 /* ---------- plantilla de página ---------- */
-const NAV = [['rutas', 'Rutas'], ['actividades', 'Actividades'], ['servicios', 'Servicios'], ['nosotros', 'Nosotros'], ['galeria', 'Galería'], ['opiniones', 'Opiniones'], ['blog', 'Blog'], ['contacto', 'Contacto']];
+const NAV = [['rutas', 'Rutas'], ['atlas', 'Atlas'], ['actividades', 'Actividades'], ['servicios', 'Servicios'], ['nosotros', 'Nosotros'], ['galeria', 'Galería'], ['opiniones', 'Opiniones'], ['blog', 'Blog'], ['contacto', 'Contacto']];
 const NAV_FOOT = NAV.concat([['preguntas-frecuentes', 'Preguntas frecuentes']]);
 const SITEMAP = [];
 
@@ -438,10 +438,10 @@ function page(rel, o) {
     '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
     '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&family=Young+Serif&display=swap">' +
     (o.preload ? '<link rel="preload" as="image" href="' + esc(o.preload) + '" fetchpriority="high">' : '') +
-    '<link rel="stylesheet" href="/css/styles.css?v=' + VERSION + '"><script>document.documentElement.classList.add("js")</script>' +
+    '<link rel="stylesheet" href="/css/styles.css?v=' + VERSION + '">' + (o.head || '') + '<script>document.documentElement.classList.add("js")</script>' +
     (o.ld || []).map(jsonld).join('') + '</head><body class="' + (o.bodyClass || '') + '">' +
     header(o.nav) + '<main id="contenido" tabindex="-1">' + o.body + '</main>' + footer() +
-    '<script src="/js/main.js?v=' + VERSION + '" defer></script></body></html>';
+    '<script src="/js/main.js?v=' + VERSION + '" defer></script>' + (o.scripts || '') + '</body></html>';
   const dir = rel === '404.html' ? OUT : path.join(OUT, rel);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(rel === '404.html' ? path.join(OUT, '404.html') : path.join(dir, 'index.html'), html);
@@ -613,6 +613,131 @@ page('nosotros', {
     '<section class="sec alt"><div class="wrap narrow">' + SECTION_HEAD('Trayectoria', 'Formación y trayectoria') + '<div class="prose rv">' + md(NOS.titulaciones || 'PROVISIONAL: Aquí se indicarán las titulaciones de los guías, el seguro y las acreditaciones de la empresa.', { shift: 2 }) + '</div></div></section>' + ctaBand()
 });
 
+/* =====================================================================
+   ATLAS GUADARRAMA · datos (GPX → pista simplificada + estadísticas) y página /atlas/
+   Los GPX se leen de src/img/uploads/ (los sube el panel o GitHub). Si falta uno, la ruta sale sin recorrido (nada inventado).
+   ===================================================================== */
+const ATL = fs.existsSync(path.join(CT, 'atlas.json')) ? readJSON('atlas.json') : { tiempo: { zonas: [] } };
+const rad = g => g * Math.PI / 180;
+function distM(a, b) {   // metros entre [lon,lat]
+  const dLat = rad(b[1] - a[1]), dLon = rad(b[0] - a[0]);
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1])) * Math.cos(rad(b[1])) * Math.sin(dLon / 2) ** 2;
+  return 6371000 * 2 * Math.asin(Math.sqrt(x));
+}
+function simplificar(pts, tol) {   // Douglas-Peucker iterativo (tol en metros)
+  const n = pts.length; if (n < 3) return pts.map((_, i) => i);
+  const k = Math.cos(rad(pts[0][1])) * 111320, kk = 110540;
+  const X = pts.map(p => p[0] * k), Y = pts.map(p => p[1] * kk);
+  const keep = new Uint8Array(n); keep[0] = keep[n - 1] = 1; const pila = [[0, n - 1]];
+  while (pila.length) {
+    const [a, b] = pila.pop(); let max = 0, idx = -1;
+    const dx = X[b] - X[a], dy = Y[b] - Y[a], len = Math.hypot(dx, dy) || 1e-9;
+    for (let i = a + 1; i < b; i++) { const d = Math.abs(dy * X[i] - dx * Y[i] + X[b] * Y[a] - Y[b] * X[a]) / len; if (d > max) { max = d; idx = i; } }
+    if (max > tol && idx > 0) { keep[idx] = 1; pila.push([a, idx], [idx, b]); }
+  }
+  const r = []; for (let i = 0; i < n; i++) if (keep[i]) r.push(i); return r;
+}
+function parseGPX(xml) {
+  const attr = (t, n) => { const m = t.match(new RegExp('\\b' + n + '\\s*=\\s*["\']([^"\']+)["\']', 'i')); return m ? parseFloat(m[1]) : NaN; };
+  const raw = [];
+  const re = /<(trkpt|rtept)\b([^>]*?)(?:\/>|>([\s\S]*?)<\/\1>)/gi; let m;
+  while ((m = re.exec(xml))) {
+    const lat = attr(m[2], 'lat'), lon = attr(m[2], 'lon'); if (!isFinite(lat) || !isFinite(lon)) continue;
+    const e = (m[3] || '').match(/<ele>\s*([-0-9.eE+]+)\s*<\/ele>/); raw.push([lon, lat, e ? parseFloat(e[1]) : null]);
+  }
+  const wp = []; const rw = /<wpt\b([^>]*?)>([\s\S]*?)<\/wpt>/gi;
+  while ((m = rw.exec(xml))) {
+    const lat = attr(m[1], 'lat'), lon = attr(m[1], 'lon'); const nm = (m[2].match(/<name>\s*(?:<!\[CDATA\[)?([\s\S]*?)(?:\]\]>)?\s*<\/name>/) || [])[1]; const e = m[2].match(/<ele>\s*([-0-9.eE+]+)\s*<\/ele>/);
+    if (isFinite(lat) && isFinite(lon) && nm) wp.push({ n: nm.trim().slice(0, 60), lat: +lat.toFixed(5), lng: +lon.toFixed(5), ele: e ? Math.round(parseFloat(e[1])) : null });
+  }
+  if (raw.length < 2) return null;
+  const conEle = raw.filter(p => p[2] !== null).length > raw.length * 0.9;
+  let el = raw.map(p => p[2]);
+  if (conEle) { let last = el.find(v => v !== null); el = el.map(v => { if (v === null) return last; last = v; return v; }); el = el.map((_, i) => { let a = 0, c = 0; for (let j = Math.max(0, i - 3); j <= Math.min(el.length - 1, i + 3); j++) { a += el[j]; c++; } return a / c; }); }
+  let km = 0, up = 0, down = 0, ref = conEle ? el[0] : 0;
+  for (let i = 1; i < raw.length; i++) {
+    km += distM(raw[i - 1], raw[i]);
+    if (conEle) { const d = el[i] - ref; if (d >= 3) { up += d; ref = el[i]; } else if (d <= -3) { down -= d; ref = el[i]; } }
+  }
+  let tol = 5, idx; do { idx = simplificar(raw, tol); tol *= 1.6; } while (idx.length > 1800);
+  const c = idx.map(i => [+raw[i][0].toFixed(5), +raw[i][1].toFixed(5), conEle ? Math.round(el[i]) : null]);
+  return { c, km: +(km / 1000).toFixed(2), up: conEle ? Math.round(up) : null, down: conEle ? Math.round(down) : null, min: conEle ? Math.round(Math.min(...el)) : null, max: conEle ? Math.round(Math.max(...el)) : null, wp };
+}
+const normT = t => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+function nivelDe(d) { const t = normT(d); if (/facil|sencill|baja/.test(t)) return 1; if (/moderad|media/.test(t)) return 2; if (/dificil|alta|dura|exigent|dificultad alta/.test(t)) return 3; return null; }
+function numDe(v) { if (typeof v === 'number') return v; const m = String(v == null ? '' : v).replace(/\./g, '').replace(',', '.').match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; }
+function coordDe(v) { if (typeof v === 'number') return v; const m = String(v == null ? '' : v).replace(',', '.').match(/-?\d+(\.\d+)?/); return m ? parseFloat(m[0]) : null; }
+function minutosDe(t) { const s = normT(t); const h = s.match(/(\d+)\s*h/), m = s.match(/(\d+)\s*min/); if (!h && !m) return null; return (h ? +h[1] * 60 : 0) + (m ? +m[1] : 0); }
+const ATLAS_OUT = { rutas: [], lugares: [], tracks: {} };
+(function () {
+  const bruto = RUTAS.map(r => ({ id: r.id, titulo: r.titulo, url: rUrl(r), imagen: r.imagen || '', lat: coordDe(r.lat), lng: coordDe(r.lng), km: numDe(r.km), desnivel: numDe(r.desnivel), dificultad: r.dificultad || '', duracion: r.duracion || '', tipos: Array.isArray(r.tipos) ? r.tipos : [], resumen: r.resumen || '', gpx: r.gpx || '' }))
+    .concat((ATL.rutas_extra || []).filter(x => x && x.id && x.titulo).map(x => ({ id: String(x.id).replace(/[^a-z0-9-]/gi, ''), titulo: x.titulo, url: x.blog && POSTS.some(p => p.slug === x.blog) ? '/blog/' + x.blog + '/' : (x.url || ''), imagen: x.imagen || '', lat: coordDe(x.lat), lng: coordDe(x.lng), km: numDe(x.km), desnivel: numDe(x.desnivel), dificultad: x.dificultad || '', duracion: x.duracion || '', tipos: Array.isArray(x.tipos) ? x.tipos : [], resumen: x.resumen || '', gpx: x.gpx || '' })));
+  bruto.forEach(r => {
+    let track = null, wp = [];
+    // Si la ruta no tiene GPX indicado, se busca uno que se llame igual que la ruta: <id>.gpx
+    if (!r.gpx) { for (const c of ['img/uploads/' + r.id + '.gpx', 'gpx/' + r.id + '.gpx']) if (fs.existsSync(path.join(SRC, c))) { r.gpx = '/' + c; break; } }
+    if (r.gpx) {
+      const f = path.join(SRC, r.gpx.replace(/^\/+/, ''));
+      if (fs.existsSync(f)) {
+        try { const g = parseGPX(fs.readFileSync(f, 'utf8')); if (g) { track = { url: '/data/track-' + r.id + '.json', km: g.km, up: g.up, down: g.down, min: g.min, max: g.max }; wp = g.wp; ATLAS_OUT.tracks[r.id] = g.c; } else console.warn('⚠ El GPX de «' + r.titulo + '» no tiene puntos válidos (' + r.gpx + ')'); }
+        catch (e) { console.warn('⚠ No se pudo leer el GPX de «' + r.titulo + '»: ' + e.message); }
+      } else console.warn('ℹ Falta el GPX de «' + r.titulo + '» (' + r.gpx + '): se mostrará sin recorrido.');
+    }
+    ATLAS_OUT.rutas.push({ id: r.id, titulo: r.titulo, url: r.url, imagen: r.imagen, lat: r.lat, lng: r.lng, km: r.km, desnivel: r.desnivel, dificultad: r.dificultad, nivel: nivelDe(r.dificultad), duracion: r.duracion, min: minutosDe(r.duracion), tipos: r.tipos, resumen: r.resumen, track });
+    wp.forEach(w => ATLAS_OUT.lugares.push({ n: w.n, lat: w.lat, lng: w.lng, ele: w.ele, ruta: r.id }));
+  });
+  (ATL.lugares || []).forEach(l => { const la = coordDe(l.lat), lo = coordDe(l.lng); if (l && l.nombre && la !== null && lo !== null) ATLAS_OUT.lugares.push({ n: l.nombre, lat: la, lng: lo, ele: numDe(l.altitud), texto: l.texto || '' }); });
+})();
+function atlasTiempoCfg() {
+  const t = JSON.parse(JSON.stringify(ATL.tiempo || { zonas: [] }));
+  // Rutas nuevas sin zona de tiempo: se asignan solas a la zona de la ruta ya asignada más cercana (o a la primera zona).
+  if ((t.zonas || []).length) {
+    const arranque = r => { const tr = ATLAS_OUT.tracks[r.id]; if (tr && tr[0]) return [tr[0][0], tr[0][1]]; return r.lat !== null && r.lng !== null && r.lat !== undefined ? [r.lng, r.lat] : null; };
+    t.zonas.forEach(z => { z.rutas = Array.isArray(z.rutas) ? z.rutas : []; });
+    const zonaDe = id => t.zonas.find(z => z.rutas.indexOf(id) >= 0);
+    ATLAS_OUT.rutas.filter(r => !zonaDe(r.id)).forEach(r => {
+      const p = arranque(r); let mejor = null, dm = Infinity;
+      if (p) ATLAS_OUT.rutas.forEach(o => { const z = zonaDe(o.id), q = z && arranque(o); if (q) { const d = distM(p, q); if (d < dm) { dm = d; mejor = z; } } });
+      (mejor || t.zonas[0]).rutas.push(r.id);
+      console.log('ℹ La ruta «' + r.titulo + '» se ha asignado sola a la zona de tiempo «' + (mejor || t.zonas[0]).nombre + '».');
+    });
+  }
+  (t.zonas || []).forEach(z => {
+    z.rutas = Array.isArray(z.rutas) ? z.rutas : [];
+    if (typeof z.altitud_ref !== 'number') { const mx = z.rutas.map(id => (ATLAS_OUT.rutas.find(r => r.id === id) || {}).track).filter(Boolean).map(tr => tr.max).filter(v => typeof v === 'number'); z.altitud_ref = mx.length ? Math.max(...mx) : null; }
+  });
+  return t;
+}
+fs.mkdirSync(path.join(OUT, 'data'), { recursive: true });
+Object.keys(ATLAS_OUT.tracks).forEach(id => fs.writeFileSync(path.join(OUT, 'data', 'track-' + id + '.json'), JSON.stringify({ c: ATLAS_OUT.tracks[id] })));
+fs.writeFileSync(path.join(OUT, 'data', 'atlas.json'), JSON.stringify({ rutas: ATLAS_OUT.rutas, lugares: ATLAS_OUT.lugares, tiempo: atlasTiempoCfg(), textos: { intro: ATL.intro_texto || '' }, generado: new Date().toISOString() }));
+
+const MAPLIBRE = '4.7.1';
+page('atlas', {
+  title: (ATL.titulo || 'Atlas Guadarrama') + ' · mapa 3D, semáforo de montaña y pasaporte | ' + NAME,
+  desc: 'Explora la Sierra de Guadarrama en 3D con recorridos GPX reales, consulta el semáforo de montaña con datos de AEMET, consigue sellos en tu pasaporte montañero y deja que el asistente te recomiende una ruta.',
+  nav: 'atlas', bodyClass: 'atlas-page',
+  image: ATLAS_OUT.rutas[0] && ATLAS_OUT.rutas[0].imagen ? ATLAS_OUT.rutas[0].imagen : null,
+  head: '<link rel="stylesheet" href="/css/atlas.css?v=' + VERSION + '">',
+  scripts: '<script src="/js/atlas.js?v=' + VERSION + '" defer></script>',
+  body: '<div class="atlas" data-atlas data-maplibre="' + MAPLIBRE + '">' +
+    '<section class="at-stage" id="mapa" aria-label="Mapa 3D de la Sierra de Guadarrama">' +
+    '<div class="at-map" id="at-map"></div>' +
+    '<div class="at-cover" id="at-cover">' + (ATLAS_OUT.rutas[0] && ATLAS_OUT.rutas[0].imagen ? '<img src="' + esc(ATLAS_OUT.rutas[0].imagen) + '" alt="" width="1600" height="900" fetchpriority="high" decoding="async">' : '') +
+    '<div class="at-cover-in"><p class="eyebrow">Atlas Guadarrama</p><h1>' + esc(ATL.titulo_portada || 'La Sierra de Guadarrama, en 3D') + '</h1>' +
+    '<p class="at-lead">' + esc(ATL.intro_texto || 'Recorre nuestras rutas sobre el relieve real, consulta las condiciones de la montaña y colecciona sellos en tu pasaporte.') + '</p>' +
+    '<p><button class="btn btn-a at-enter" type="button" data-at-enter>' + ic('pin', 20) + ' Explorar el mapa 3D</button></p>' +
+    '<p class="at-fine">Al entrar se cargan el mapa y el relieve desde servidores externos (IGN, Amazon Web Services y unpkg). <noscript>Para usar el Atlas necesitas activar JavaScript.</noscript></p></div></div>' +
+    '<div class="at-hud" id="at-hud" hidden><div class="at-routes" id="at-routes" aria-label="Rutas del Atlas"></div><div class="at-sem-pill" id="at-sem-pill"></div><aside class="at-card" id="at-card" aria-live="polite"></aside><div class="at-ctrl" id="at-ctrl"></div></div>' +
+    '<p class="at-nogl" id="at-nogl" role="status" hidden></p></section>' +
+    '<nav class="at-nav" aria-label="Secciones del Atlas"><div class="wrap"><a href="#mapa">Mapa 3D</a><a href="#semaforo">Semáforo</a><a href="#asistente">Asistente</a><a href="#pasaporte">Pasaporte</a></div></nav>' +
+    '<div class="wrap at-sections">' +
+    '<section class="at-sec at-sem rv" id="semaforo"><div class="at-sec-h"><p class="eyebrow">Semáforo de montaña</p><h2>Cómo está la sierra hoy</h2><p>Datos oficiales de AEMET (observación en la estación, previsión del municipio y avisos). Es una ayuda orientativa, no una autorización para salir.</p></div><div id="at-sem-body"><p class="empty-n">Cargando condiciones…</p></div></section>' +
+    '<section class="at-sec at-asis rv" id="asistente"><div class="at-sec-h"><p class="eyebrow">Asistente de rutas</p><h2>¿Qué ruta te conviene?</h2><p>Cuatro preguntas rápidas y te proponemos las rutas que mejor encajan. Las verás resaltadas en el mapa.</p></div><div id="at-asis-body"></div></section>' +
+    '<section class="at-sec at-pas rv" id="pasaporte"><div class="at-sec-h"><p class="eyebrow">Pasaporte montañero</p><h2>Tu pasaporte de la Sierra</h2><p>Después de cada salida te entregamos un código personal. Escríbelo aquí para estampar el sello, sumar kilómetros y desnivel y desbloquear logros. No hace falta registrarse.</p></div><div id="at-pas-body"></div></section>' +
+    '</div></div>'
+});
+
 /* ---- Opiniones ---- */
 page('opiniones', {
   title: 'Opiniones de quienes caminan con nosotros | ' + NAME,
@@ -725,7 +850,7 @@ fs.mkdirSync(phDir, { recursive: true });
 PH.forEach(([seed, mood], name) => fs.writeFileSync(path.join(phDir, name), landscapeSVG(seed, mood)));
 fs.writeFileSync(path.join(OUT, 'robots.txt'), 'User-agent: *\nAllow: /\nDisallow: /admin/\n' + (BASE ? 'Sitemap: ' + BASE + '/sitemap.xml\n' : ''));
 if (BASE) fs.writeFileSync(path.join(OUT, 'sitemap.xml'), '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + SITEMAP.map(u => '  <url><loc>' + BASE + u + '</loc></url>').join('\n') + '\n</urlset>\n');
-fs.writeFileSync(path.join(OUT, '_headers'), '/moderar/*\n  X-Robots-Tag: noindex, nofollow\n  Cache-Control: no-store\n/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n/img/*\n  Cache-Control: public, max-age=604800\n/favicon.svg\n  Cache-Control: public, max-age=604800\n');
+fs.writeFileSync(path.join(OUT, '_headers'), '/moderar/*\n  X-Robots-Tag: noindex, nofollow\n  Cache-Control: no-store\n/atlas-codigos/*\n  X-Robots-Tag: noindex, nofollow\n  Cache-Control: no-store\n/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: strict-origin-when-cross-origin\n  X-Frame-Options: SAMEORIGIN\n/img/*\n  Cache-Control: public, max-age=604800\n/favicon.svg\n  Cache-Control: public, max-age=604800\n');
 
 console.log('✔ Web generada en dist/ · ' + SITEMAP.length + ' páginas · ' + RUTAS.length + ' rutas · ' + POSTS.length + ' artículos · ' + PH.size + ' ilustraciones provisionales');
 if (!BASE) console.log('ℹ Falta la dirección web (content/ajustes.json → url_sitio). Sin ella no se genera sitemap.xml ni las etiquetas canónicas. En Netlify se completa sola.');

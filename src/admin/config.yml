@@ -54,6 +54,8 @@ collections:
       - { label: "Material recomendado (un elemento por línea)", name: material, widget: text, required: false }
       - { label: "Qué incluye", name: incluye, widget: markdown, required: false, buttons: [bold, italic, bulleted-list] }
       - { label: "Mapa de Wikiloc (opcional)", name: wikiloc, widget: string, required: false, hint: "Pega el número de la ruta de Wikiloc (ejemplo: 295268539) o su enlace. Si lo dejas vacío, esta ruta no muestra mapa de Wikiloc." }
+      - { label: "Tipo de aventura (para el Atlas y el asistente)", name: tipos, widget: select, multiple: true, required: false, options: ["Naturaleza y bosque", "Historia y patrimonio", "Cumbres y vistas", "Reto físico", "Ritmo tranquilo"], hint: "Marca todo lo que encaje. El asistente del Atlas usa esto para recomendar la ruta." }
+      - { label: "Recorrido GPX para el Atlas 3D (opcional)", name: gpx, widget: file, required: false, hint: "Sube el archivo .gpx de la ruta. Si lo dejas vacío, la ruta sale en el Atlas sin recorrido dibujado." }
       - { label: "Perfil de altitud (opcional)", name: perfil, widget: string, required: false, hint: "Pares km:altitud separados por comas. Ejemplo: 0:900, 3:1050, 6:1200" }
       - { label: "Precio", name: precio, widget: string, required: false, hint: "Escribe el precio real con el texto que quieras mostrar" }
       - { label: "Semilla de la ilustración provisional", name: semilla, widget: hidden, required: false }
@@ -205,6 +207,83 @@ collections:
               - { label: "Nombre", name: autor, widget: string }
               - { label: "Ruta realizada", name: ruta, widget: relation, collection: rutas, search_fields: [titulo], value_field: "{{slug}}", display_fields: [titulo], required: false }
               - { label: "Estrellas", name: estrellas, widget: number, value_type: int, min: 1, max: 5, default: 5 }
+      - label: "Atlas Guadarrama"
+        name: atlas
+        file: content/atlas.json
+        fields:
+          - { label: "Título del Atlas", name: titulo, widget: string, required: false }
+          - { label: "Título grande de la portada del Atlas", name: titulo_portada, widget: string, required: false }
+          - { label: "Texto de presentación", name: intro_texto, widget: text, required: false }
+          - label: "Semáforo de montaña (ajustes avanzados)"
+            name: tiempo
+            widget: object
+            required: false
+            fields:
+              - { label: "Código de área de avisos de AEMET (Madrid = 72)", name: avisos_area, widget: string, required: false }
+              - { label: "Palabras de la zona de avisos (por defecto: Guadarrama)", name: avisos_texto, widget: list, required: false, field: { label: "Palabra", name: palabra, widget: string } }
+              - label: "Umbrales del semáforo"
+                name: umbrales
+                widget: object
+                required: false
+                hint: "Criterio orientativo propio, no oficial. Rachas y vientos en km/h, lluvia en %, temperaturas en °C."
+                fields:
+                  - { label: "Racha: precaución (km/h)", name: racha_ambar, widget: number, value_type: int, required: false }
+                  - { label: "Racha: condiciones adversas (km/h)", name: racha_rojo, widget: number, value_type: int, required: false }
+                  - { label: "Viento medio: precaución (km/h)", name: viento_ambar, widget: number, value_type: int, required: false }
+                  - { label: "Viento medio: condiciones adversas (km/h)", name: viento_rojo, widget: number, value_type: int, required: false }
+                  - { label: "Probabilidad de lluvia: precaución (%)", name: lluvia_ambar, widget: number, value_type: int, required: false }
+                  - { label: "Probabilidad de lluvia: condiciones adversas (%)", name: lluvia_rojo, widget: number, value_type: int, required: false }
+                  - { label: "Lluvia ahora: precaución (mm/h)", name: prec_ambar, widget: number, value_type: int, required: false }
+                  - { label: "Lluvia ahora: condiciones adversas (mm/h)", name: prec_rojo, widget: number, value_type: int, required: false }
+                  - { label: "Temperatura máxima: precaución (°C)", name: tmax_ambar, widget: number, value_type: int, required: false }
+                  - { label: "Temperatura mínima: precaución (°C)", name: tmin_ambar, widget: number, value_type: int, required: false }
+                  - { label: "Nieve en el suelo: precaución (cm)", name: nieve_suelo_ambar, widget: number, value_type: int, required: false }
+              - label: "Zonas"
+                name: zonas
+                widget: list
+                required: false
+                fields:
+                  - { label: "Identificador (sin espacios)", name: id, widget: string }
+                  - { label: "Nombre que ve el visitante", name: nombre, widget: string }
+                  - { label: "Municipio en AEMET", name: municipio, widget: string }
+                  - { label: "Otros nombres del municipio", name: alias_municipio, widget: list, required: false, field: { label: "Nombre", name: nombre, widget: string } }
+                  - { label: "Estación de AEMET (código, opcional)", name: estacion, widget: string, required: false, hint: "Ejemplo: 2462 = Puerto de Navacerrada. Déjalo vacío si no hay estación cercana." }
+                  - { label: "Nombre de la estación", name: estacion_nombre, widget: string, required: false }
+                  - { label: "Rutas de esta zona (identificadores)", name: rutas, widget: list, required: false, field: { label: "Ruta", name: ruta, widget: string } }
+          - label: "Rutas extra del Atlas (por ejemplo, rutas del blog)"
+            name: rutas_extra
+            widget: list
+            required: false
+            fields:
+              - { label: "Identificador (sin espacios)", name: id, widget: string }
+              - { label: "Título", name: titulo, widget: string }
+              - { label: "Nombre del artículo del blog (opcional)", name: blog, widget: string, required: false }
+              - { label: "Kilómetros", name: km, widget: number, value_type: float, required: false }
+              - { label: "Desnivel positivo (m)", name: desnivel, widget: number, value_type: int, required: false }
+              - { label: "Dificultad", name: dificultad, widget: select, required: false, options: ["Fácil", "Moderada", "Alta"] }
+              - { label: "Duración", name: duracion, widget: string, required: false }
+              - { label: "Tipo de aventura", name: tipos, widget: select, multiple: true, required: false, options: ["Naturaleza y bosque", "Historia y patrimonio", "Cumbres y vistas", "Reto físico", "Ritmo tranquilo"] }
+              - { label: "Resumen", name: resumen, widget: text, required: false }
+              - { label: "Recorrido GPX", name: gpx, widget: file, required: false }
+              - { label: "Imagen", name: imagen, widget: image, required: false }
+              - { label: "Latitud del inicio (opcional)", name: lat, widget: string, required: false }
+              - { label: "Longitud del inicio (opcional)", name: lng, widget: string, required: false }
+          - label: "Lugares destacados"
+            name: lugares
+            widget: list
+            required: false
+            fields:
+              - { label: "Nombre", name: nombre, widget: string }
+              - { label: "Latitud", name: lat, widget: string }
+              - { label: "Longitud", name: lng, widget: string }
+              - { label: "Altitud (m, opcional)", name: altitud, widget: string, required: false }
+              - { label: "Texto corto (opcional)", name: texto, widget: string, required: false }
+      - label: "Página de opiniones"
+        name: opiniones_pagina
+        file: content/opiniones-pagina.json
+        fields:
+          - { label: "Imagen principal de la página Opiniones (opcional)", name: imagen, widget: image, required: false, hint: "Mejor panorámica (formato muy ancho, por ejemplo 1600 x 720 píxeles). Si la dejas vacía, la página no muestra imagen." }
+          - { label: "Descripción de la imagen (para accesibilidad)", name: descripcion, widget: string, required: false, hint: "Una frase corta que diga qué se ve en la foto." }
       - label: "Aviso legal y privacidad"
         name: legal
         file: content/legal.json
