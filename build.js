@@ -382,6 +382,7 @@ const BTN_WA = (msg, txt, cls) => '<a class="btn btn-wa ' + (cls || '') + '" hre
 /* ---------- plantilla de página ---------- */
 const NAV = [['inicio', 'Inicio'], ['rutas', 'Rutas'], ['servicios', 'Servicios'], ['actividades', 'Actividades'], ['atlas', 'Atlas'], ['nosotros', 'Nosotros'], ['blog', 'Blog'], ['galeria', 'Galería'], ['opiniones', 'Opiniones'], ['contacto', 'Contacto']];
 const navUrl = id => id === 'inicio' ? '/' : '/' + id + '/';
+const SITEMAP = [];
 const NAV_FOOT = NAV.concat([['preguntas-frecuentes', 'Preguntas frecuentes']]);
 
 function logo() { return '<a class="logo" href="/" aria-label="' + esc(NAME) + ', inicio"><img src="/img/uploads/Logo%20Guadarramaa.Guidess.jpeg" alt="" width="40" height="40" style="width:40px;height:40px;object-fit:cover;border-radius:8px"><span class="lt"><b>Guadarramaa</b><em>.guidess</em></span></a>'; }
